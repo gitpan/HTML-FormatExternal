@@ -1,0 +1,47 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.55.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 8624bcdae55baeef00cd11d5dfcfa60f68710a02 COPYING
+SHA1 5df5a07ab00e8aeece121ec0145c412daf6326de Changes
+SHA1 31e980ddb3322bf82cab430e1cb8e38947958646 MANIFEST
+SHA1 401b0f4eaa2902d4a2d33008cae0a8768c393a38 MANIFEST.SKIP
+SHA1 83ac7f565e073d405388383d96991d1e5812bf5b META.yml
+SHA1 f5c59e32628250b5194902fc9696fc1268d5c6d4 Makefile.PL
+SHA1 2ba19f8c94ffd2df5b3504ac65051cc0e6c92788 debian/changelog
+SHA1 1b6453892473a467d07372d45eb05abc2031647a debian/compat
+SHA1 40b33ada10ee66110e2aa23a33adf9aee33628e8 debian/control
+SHA1 9ede8116f3cbec8846816d9b82b60911ef876b55 debian/copyright
+SHA1 7b20ede534e907b190590ebefea70040581c820f debian/rules
+SHA1 f59f53cb54a8678c5df52a6631b28942caaff0ab debian/watch
+SHA1 9c3b95385a0be09a3ecedd46672107ee0d355d48 devel/run.pl
+SHA1 ffe98cb8173d89023e002f39111e9447127ef4ab devel/x.html
+SHA1 e8fec5f197340b127b9b5b520c784dfadd3235f1 examples/demo.pl
+SHA1 552ceb1a370dc904dd6048353e0de59029fe0a50 lib/HTML/FormatExternal.pm
+SHA1 ebf7235a100b150660854733623fd4234de3ecaa lib/HTML/FormatText/Elinks.pm
+SHA1 cb2115482c5079ebbd184a161be5c02616ac8f84 lib/HTML/FormatText/Links.pm
+SHA1 0c0a75ecc31e90844a42afb434b818ffb145ec89 lib/HTML/FormatText/Lynx.pm
+SHA1 c63b4b43d7174c004d78f969c2c73e71a1e17bec lib/HTML/FormatText/Netrik.pm
+SHA1 997fdadbf28a7d43dccf039619a4f8afc54a2217 lib/HTML/FormatText/W3m.pm
+SHA1 d59b9bfe657ed4491bdf3080c8eddafe6ed33f0e lib/HTML/FormatText/Zen.pm
+SHA1 38d2b526abc525a7444f1f25e91cb4450988670f t/FormatExternal.t
+SHA1 a661a39e55a4127aecb1b97a631c4f01f7dce8c6 t/pod.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+
+iD8DBQFJNcKzLFMCIV9q3ToRAm1yAJwLRXZMbUOJ7K/mB9rdjjSEHkm+bgCfRNK5
+KjNxUtfqdWUGmnlcz7+t6lA=
+=x3J0
+-----END PGP SIGNATURE-----
