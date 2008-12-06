@@ -16,6 +16,15 @@
 # along with HTML-FormatExternal.  If not, see
 # <http://www.gnu.org/licenses/>.
 
+
+# Build-Depends:
+#
+#   libhtml-tree-perl has HTML::TreeBuilder used by a couple of tests.
+#   The programs are used by the tests likewise.  But demanding all
+#   that is a bit tedious for a manual build, and in particular "zen"
+#   is not in the archive as of Dec 08.
+
+
 Source: libhtml-formatexternal-perl
 Section: perl
 Priority: optional
@@ -27,7 +36,7 @@ Bugs: mailto:user42@zip.com.au
 
 Package: libhtml-formatexternal-perl
 Architecture: all
-Depends: perl (>= 5.8), libperl6-slurp-perl, ${misc:Depends}
+Depends: perl (>= 5.6), libperl6-slurp-perl, ${misc:Depends}
 Recommends: lynx | elinks | links | netrik | w3m | zen
 Suggests: elinks, links, lynx, netrik, w3m, zen
 Description: Format HTML to text in perl using external programs

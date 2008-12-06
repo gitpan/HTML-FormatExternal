@@ -19,7 +19,7 @@ use warnings;
 use Carp;
 use base 'HTML::FormatExternal';
 
-our $VERSION = 11;
+our $VERSION = 12;
 
 use constant { DEFAULT_LEFTMARGIN => 3,
                DEFAULT_RIGHTMARGIN => 77 };
@@ -90,8 +90,8 @@ The module interface is compatible with formatters like C<HTML::FormatText>,
 but all parsing etc is done by zen.
 
 See C<HTML::FormatExternal> for the formatting functions.  But as of zen
-version 0.2.3 none of the options are supported.  Input charset is always
-latin-1, output is latin-1, dump width is 80 columns with no left margin.
+version 0.2.3 the options have no effect.  Input charset is always latin-1,
+output is latin-1, and dump width is 80 columns with no left margin.
 
 =head1 SEE ALSO
 

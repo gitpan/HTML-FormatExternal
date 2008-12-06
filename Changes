@@ -17,5 +17,9 @@ along with HTML-FormatExternal.  If not, see http://www.gnu.org/licenses/
 
 
 
+Version 12, December 2008
+    - mucho test count fixes
+    - cope with older links and lynx without nomargin
+
 Version 11, December 2008
     - the first version

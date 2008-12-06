@@ -19,7 +19,7 @@ use warnings;
 use Carp;
 use base 'HTML::FormatExternal';
 
-our $VERSION = 11;
+our $VERSION = 12;
 
 use constant { DEFAULT_LEFTMARGIN => 3,
                DEFAULT_RIGHTMARGIN => 77 };
@@ -114,7 +114,18 @@ The module interface is compatible with formatters like C<HTML::FormatText>,
 but all parsing etc is done by elinks.
 
 See C<HTML::FormatExternal> for the formatting functions and options, all of
-which are supported by C<HTML::FormatText::Elinks>.
+which are supported by C<HTML::FormatText::Elinks>, with the following
+caveats.
+
+=over 4
+
+=item C<input_charset>
+
+As of Elinks 0.12pre2 (Oct 2008) the only multibyte input charset accepted
+is utf-8.  You can recode other charsets to utf-8 if necessary (this module
+doesn't attempt to do that automatically).
+
+=back
 
 =head1 SEE ALSO
 

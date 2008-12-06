@@ -24,17 +24,17 @@ use FindBin qw($Bin);
 my $class;
 # $class = 'HTML::FormatText::Lynx';
 # $class = 'HTML::FormatText::W3m';
-#$class = 'HTML::FormatText::Links';
-#$class = 'HTML::FormatText::Elinks';
-$class = 'HTML::FormatText::Netrik';
+# $class = 'HTML::FormatText::Links';
+# $class = 'HTML::FormatText::Netrik';
+$class = 'HTML::FormatText::Elinks';
 Module::Load::load ($class);
-
-
 
 {
   my $str = $class->format_file ("$Bin/x.html",
                                   rightmargin => 60,
                                  # leftmargin => 20,
+                                 # input_charset => 'ascii',
+                                 # input_charset => 'shift-jis',
                                  # input_charset => 'iso-8859-1',
                                  # input_charset => 'utf-8',
                                  # output_charset => 'iso-8859-1'
@@ -47,6 +47,17 @@ Module::Load::load ($class);
   print "utf8 flag ",(utf8::is_utf8($str) ? 'yes' : 'no'), "\n";
   exit 0;
 }
+{
+  require HTML::FormatText::Lynx;
+  print HTML::FormatText::Lynx::_have_nomargins(),"\n";
+
+  require HTML::FormatText::Links;
+  print HTML::FormatText::Links::_have_html_margin(),"\n";
+
+  exit 0;
+}
+
+
 
 {
   my $html_str = <<"HERE";

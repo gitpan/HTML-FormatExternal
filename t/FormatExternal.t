@@ -20,10 +20,10 @@
 use strict;
 use warnings;
 use HTML::FormatExternal;
-use Test::More tests => 67;
+use Test::More tests => 2 + 6 * 11;
 
-ok ($HTML::FormatExternal::VERSION >= 11);
-ok (HTML::FormatExternal->VERSION  >= 11);
+ok ($HTML::FormatExternal::VERSION >= 12);
+ok (HTML::FormatExternal->VERSION  >= 12);
 
 sub is_undef_or_string {
   my ($obj) = @_;
@@ -48,79 +48,104 @@ foreach my $class (qw(HTML::FormatText::Elinks
   eval "require $class"
     or die $@;
 
-  ok ($class->VERSION == $HTML::FormatExternal::VERSION);
-  { no strict 'refs';
-    ok (${"${class}::VERSION"} == $HTML::FormatExternal::VERSION); }
-
+  is ($class->VERSION,
+      $HTML::FormatExternal::VERSION);
+  is (do { no strict 'refs'; ${"${class}::VERSION"} },
+      $HTML::FormatExternal::VERSION);
 
   #
   # program_full_version
   #
   { my $version = $class->program_full_version;
     require Data::Dumper;
+    diag ("$class program_full_version ", Data::Dumper::Dumper($version));
     ok (is_undef_or_string($version),
-        "program_full_version() from class ".Data::Dumper::Dumper($version));
+        'program_full_version() from class');
   }
   { my $formatter = $class->new;
     my $version = $formatter->program_full_version;
     ok (is_undef_or_string($version),
-        "program_full_version() from obj ".Data::Dumper::Dumper($version));
+        'program_full_version() from obj');
   }
 
   #
   # program_version
   #
-
-  require Data::Dumper;
   { my $version = $class->program_version();
+    require Data::Dumper;
+    diag ("$class program_version ", Data::Dumper::Dumper($version));
     ok (is_undef_or_one_line_string($version),
-        "$class program_version() from class ".Data::Dumper::Dumper($version));
+        "$class program_version() from class");
   }
   { my $formatter = $class->new;
     my $version = $formatter->program_version();
     ok (is_undef_or_one_line_string($version),
-        "$class program_version() from obj ".Data::Dumper::Dumper($version));
+        "$class program_version() from obj");
   }
 
 
  SKIP: {
     if (! defined $class->program_full_version) {
-      skip "$class program not available", 4;
+      skip "$class program not available", 5;
     }
 
-    { my $html = '<html><body>Hello</body><html>';
-
-      my $str = $class->format_string ($html);
+    { my $str = $class->format_string ('<html><body>Hello</body><html>');
       like ($str, qr/Hello/,
             "$class through class");
-
-      $str = $class->format_string ($html, leftmargin => 0);
-      like ($str, qr/^Hello/m,  # /m to allow leading blank lines
-            "$class through class, with leftmargin 0");
-
-      my $formatter = $class->new;
-      $str = $formatter->format ($html);
+    }
+    { my $formatter = $class->new;
+      my $str = $formatter->format ('<html><body>Hello</body><html>');
       like ($str, qr/Hello/,
             "$class through formatter object");
-
-    SKIP: {
-        eval { require HTML::TreeBuilder }
-          or skip 'HTML::TreeBuilder not available', 1;
-
-        my $tree = HTML::TreeBuilder->new_from_content ($html);
-        $str = $formatter->format ($tree);
-        like ($str, qr/Hello/,
-              "$class through formatter object on TreeBuilder");
-      }
     }
 
-    if ($class !~ /Zen/) { # doesn't support rightmargin
+  SKIP: {
+      eval { require HTML::TreeBuilder }
+        or skip 'HTML::TreeBuilder not available', 1;
+
+      my $tree = HTML::TreeBuilder->new_from_content
+        ('<html><body>Hello</body><html>');
+      my $formatter = $class->new;
+      my $str = $formatter->format ($tree);
+      like ($str, qr/Hello/,
+            "$class through formatter object on TreeBuilder");
+    }
+
+  SKIP: {
+      if ($class =~ /Lynx/ && ! $class->_have_nomargins()) {
+        skip "this Lynx doesn't have -nomargins", 1;
+      }
+      if ($class =~ /Links/ && ! $class->_have_html_margin()) {
+        skip "this links doesn't have -html-margin", 1;
+      }
+
+      my $str = $class->format_string ('<html><body>Hello</body><html>',
+                                       leftmargin => 0);
+      like ($str, qr/^Hello/m,  # /m to allow leading blank lines
+            "$class through class, with leftmargin 0");
+    }
+
+  SKIP: {
+      if ($class =~ /Zen/) {
+        skip "$class doesn't support rightmargin", 1;
+      }
+      if ($class =~ /Lynx/ && ! $class->_have_nomargins()) {
+        skip "this Lynx doesn't have -nomargins", 1;
+      }
+      if ($class =~ /Links/ && ! $class->_have_html_margin()) {
+        skip "this links doesn't have -html-margin", 1;
+      }
 
       my $html = '<html><body>123 567 9012 abc def ghij</body><html>';
       my $str = $class->format_string ($html,
                                        leftmargin => 0,
                                        rightmargin => 12);
-      like ($str, qr/^123 567 9012$/m,  # /m to allow leading blank lines
+      { require Data::Dumper;
+        my $dumper = Data::Dumper->new([$str],['output']);
+        $dumper->Useqq (1);
+        diag ($dumper->Dump);
+      }
+      like ($str, qr/^123 567 9012$/m,
             "$class through class, with leftmargin 0 rightmargin 12");
     }
   }

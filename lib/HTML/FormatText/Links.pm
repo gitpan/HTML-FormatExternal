@@ -19,11 +19,26 @@ use warnings;
 use Carp;
 use base 'HTML::FormatExternal';
 
-our $VERSION = 11;
+our $VERSION = 12;
 
 use constant { DEFAULT_LEFTMARGIN => 3,
                DEFAULT_RIGHTMARGIN => 77,
                _WIDE_CHARSET => 'iso-8859-1' };
+
+# It seems maybe some people make "links" an alias for "elinks", and the
+# latter doesn't have -html-margin.  Maybe it could be worth adapting to
+# elinks style, but for now just don't use it if it doesn't work.
+#
+my $help_done;
+my $have_html_margin;
+sub _have_html_margin {
+  $help_done ||= do {
+    my $help = __PACKAGE__->_run_version ('links', '-help');
+    $have_html_margin = ($help =~ /-html-margin/);
+    1;
+  };
+  return $have_html_margin;
+}
 
 sub program_full_version {
   my ($self_or_class) = @_;
@@ -44,7 +59,9 @@ sub _crunch_command {
   my ($class, $option) = @_;
 
   if (defined $option->{'width'}) {
-    $option->{'html-margin'} = 0;
+    if (_have_html_margin()) {
+      $option->{'html-margin'} = 0;
+    }
   }
   if (my $input_charset = delete $option->{'input_charset'}) {
     # links (version 2.2 at least) accepts "latin1" but not "latin-1"
@@ -94,7 +111,8 @@ HTML::FormatText::Links - format HTML as plain text using links
 
 =head1 DESCRIPTION
 
-C<HTML::FormatText::Links> turns HTML into plain text using the C<links> program.
+C<HTML::FormatText::Links> turns HTML into plain text using the C<links>
+program.
 
 =over 4
 
@@ -105,14 +123,25 @@ L<http://links.twibright.com/>
 The module interface is compatible with formatters like C<HTML::FormatText>,
 but all parsing etc is done by links.  See C<HTML::FormatExternal> for the
 formatting functions and options, all of which are supported by
-C<HTML::FormatText::Links>.
+C<HTML::FormatText::Links>, with the following caveats.
 
-Note that though UTF-8 input can be given, the C<output_charset> cannot be
-UTF-8.  Various unicode characters are turned into nice output though, for
-instance smiley face U+263A becomes ":-)".
+=over 4
+
+=item C<leftmargin>, C<rightmargin>
+
+In past versions of links without the C<-html-margin> option you get an
+extra 3 spaces within the requested left and right margins.
+
+=item C<input_charset>, C<output_charset>
+
+Although UTF-8 input can be given, the output cannot be UTF-8.  Various
+unicode characters are turned into nice output though, for example smiley
+face U+263A becomes ":-)".
+
+=back
 
 Links may be slightly picky about its charset names.  The module attempts to
-ease that by for instance turning "latin-1" which not otherwise accepted
+ease that by for instance turning "latin-1" which is not otherwise accepted
 into "latin1" which is accepted.  (The full "ISO-8859-1" is accepted too.)
 
 =head1 SEE ALSO

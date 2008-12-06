@@ -19,10 +19,21 @@ use warnings;
 use Carp;
 use base 'HTML::FormatExternal';
 
-our $VERSION = 11;
+our $VERSION = 12;
 
 use constant { DEFAULT_LEFTMARGIN => 2,
                DEFAULT_RIGHTMARGIN => 72 };
+
+my $help_done = 0;
+my $have_nomargins;
+sub _have_nomargins {
+  $help_done ||= do {
+    my $help = __PACKAGE__->_run_version ('lynx', '-help');
+    $have_nomargins = ($help =~ /-nomargins/);
+    1;
+  };
+  return $have_nomargins;
+}
 
 sub program_full_version {
   my ($self_or_class) = @_;
@@ -43,7 +54,9 @@ sub _crunch_command {
   my ($class, $option) = @_;
 
   if (defined $option->{'width'}) {
-    $option->{'nomargins'} = undef;
+    if (_have_nomargins()) {
+      $option->{'nomargins'} = undef;
+    }
   }
   if (my $input_charset = delete $option->{'input_charset'}) {
     $option->{'assume_charset'} = $input_charset;
@@ -100,7 +113,17 @@ The module interface is compatible with formatters like C<HTML::FormatText>,
 but all parsing etc is done by lynx.
 
 See C<HTML::FormatExternal> for the formatting functions and options, all of
-which are supported by C<HTML::FormatText::Lynx>.
+which are supported by C<HTML::FormatText::Lynx>, with the following caveats
+
+=over 4
+
+=item C<leftmargin>, C<rightmargin>
+
+Prior to the C<-nomargins> option of Lynx 2.8.6dev.12 (June 2005) an
+additional 3 space margin is always applied within the requested left and
+right positions.
+
+=back
 
 =head1 SEE ALSO
 

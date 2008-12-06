@@ -16,3 +16,5 @@
 dist-deb
 ^maybe
 ^samples
+^msg
+^test-dist

@@ -23,7 +23,7 @@ use Carp;
 #
 # use 5.008;
 
-our $VERSION = 11;
+our $VERSION = 12;
 
 # set this to 1 for some diagnostic prints, set to 2 to preserve tempfiles
 # (or with the usual File::Temp settings)
@@ -251,7 +251,7 @@ by the C<input_charset> option below.
 
 A string should be bytes like a file, not Perl wide chars.  (There's some
 secret experimental encode/decode for wide chars, but better let
-C<HTML::Formatter> take the lead on how that should work.)
+C<HTML::Formatter> take the lead on how that might work.)
 
 The result string is bytes similarly, encoded in whatever the respective
 programs produce.  This is usually the locale charset but you can force it
@@ -272,12 +272,13 @@ settings (usually a good thing).
 
 The column numbers for the left and right hand ends of the text.
 C<leftmargin> 0 means no padding on the left.  C<rightmargin> is the text
-width, so for instance 60 would mean the longest line is 60 characters.
-These options are compatible with C<HTML::FormatText>.
+width, so for instance 60 would mean the longest line is 60 characters
+(inclusive of any C<leftmargin>).  These options are compatible with
+C<HTML::FormatText>.
 
 C<rightmargin> is not necessarily a hard limit.  Some of the formatter
-programs allow it to be exceeded by a literal C<< <pre> >> section, or a run
-of C<&nbsp;>, or similar.
+programs will exceed it in a HTML literal C<< <pre> >> section, or a run of
+C<&nbsp;>, or similar.
 
 =item C<< input_charset => STRING >>
 
@@ -293,10 +294,10 @@ defaults vary, but usually follow the locale.
 
 =head1 FUTURE
 
-C<elinks> and C<netrik> can produce ANSI escapes for colours, underline,
-etc, which might be good for text destined for a tty or further crunching.
-Perhaps in the future an C<ansi> option will enable that where possible but
-for now it's turned off in those programs to keep the default
+C<elinks> (from Aug 2008) and C<netrik> can produce ANSI escapes for
+colours, underline, etc, which might be good for text destined for a tty or
+further crunching.  Perhaps an C<ansi> option could enable that, where
+possible, but for now it's turned off in those programs to keep the default
 straightforward.
 
 =head1 SEE ALSO
