@@ -20,6 +20,7 @@ Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
 SIGNATURE
+t/devel/More.t
 t/FormatExternal.t
 t/pod.t
 META.yml                                 Module meta-data (added by MakeMaker)

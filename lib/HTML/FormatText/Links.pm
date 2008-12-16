@@ -19,15 +19,16 @@ use warnings;
 use Carp;
 use base 'HTML::FormatExternal';
 
-our $VERSION = 12;
+our $VERSION = 13;
 
 use constant { DEFAULT_LEFTMARGIN => 3,
                DEFAULT_RIGHTMARGIN => 77,
                _WIDE_CHARSET => 'iso-8859-1' };
 
 # It seems maybe some people make "links" an alias for "elinks", and the
-# latter doesn't have -html-margin.  Maybe it could be worth adapting to
-# elinks style, but for now just don't use it if it doesn't work.
+# latter doesn't have -html-margin.  Maybe it'd be worth adapting to elinks
+# style "set document.browse.margin_width=0" in that case, but for now just
+# don't use it if it doesn't work.
 #
 my $help_done;
 my $have_html_margin;
@@ -57,40 +58,38 @@ sub program_version {
 
 sub _crunch_command {
   my ($class, $option) = @_;
+  my @command = ('links', '-dump', '-force-html');
 
-  if (defined $option->{'width'}) {
+  if (defined $option->{'_width'}) {
+    push @command, '-width', $option->{'_width'};
     if (_have_html_margin()) {
-      $option->{'html-margin'} = 0;
+      push @command, '-html-margin', 0;
     }
   }
-  if (my $input_charset = delete $option->{'input_charset'}) {
-    # links (version 2.2 at least) accepts "latin1" but not "latin-1"
-    # the latter is accepted by the other FormatExternal programs, so mung
-    # it for convenience
-    $input_charset =~ s/^(latin)-([0-9]+)$/$1$2/i;
 
-    $option->{'html-assume-codepage'} = $input_charset;
-    $option->{'html-hard-assume'} = 1;
+  if (my $input_charset = $option->{'input_charset'}) {
+    push @command,
+      '-html-assume-codepage', _links_mung_charset ($input_charset),
+        '-html-hard-assume', 1;
   }
-  if (my $output_charset = delete $option->{'output_charset'}) {
-    $option->{'codepage'} = $output_charset;
+  if (my $output_charset = $option->{'output_charset'}) {
+    push @command, '-codepage', _links_mung_charset ($output_charset);
   }
 
-  return ('links',
-          '-dump',
-          '-force-html',
-
-          # this secret crunching turns say
-          #    'foo' => 123          into -foo 123
-          #    'bar' => undef        into -bar
-          #
-          # there's probably a good chance of such pass-though only making a
-          # mess, but the idea is to have some way to give arbitrary links
-          # options
-          #
-          (map { defined $option->{$_} ? ("-$_", $option->{$_}) : ("-$_") }
-           keys %$option));
+  # 'links_options' not documented ...
+  return (@command, @{$option->{'links_options'} || []});
 }
+
+# links (version 2.2 at least) accepts "latin1" but not "latin-1".  The
+# latter is accepted by the other FormatExternal programs, so turn "latin-1"
+# into "latin1" for convenience.
+#
+sub _links_mung_charset {
+  my ($charset) = @_;
+  $charset =~ s/^(latin)-([0-9]+)$/$1$2/i;
+  return $charset;
+}
+
 
 1;
 __END__
@@ -140,9 +139,9 @@ face U+263A becomes ":-)".
 
 =back
 
-Links may be slightly picky about its charset names.  The module attempts to
-ease that by for instance turning "latin-1" which is not otherwise accepted
-into "latin1" which is accepted.  (The full "ISO-8859-1" is accepted too.)
+Links can be a little picky about its charset names.  This module attempts
+to ease that by for instance turning "latin-1" (not accepted) into "latin1"
+(which is accepted).  A full "ISO-8859-1" etc is accepted too.
 
 =head1 SEE ALSO
 

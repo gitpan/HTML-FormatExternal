@@ -22,26 +22,39 @@ use Data::Dumper;
 use FindBin qw($Bin);
 
 my $class;
-# $class = 'HTML::FormatText::Lynx';
-# $class = 'HTML::FormatText::W3m';
 # $class = 'HTML::FormatText::Links';
 # $class = 'HTML::FormatText::Netrik';
-$class = 'HTML::FormatText::Elinks';
+#$class = 'HTML::FormatText::Elinks';
+$class = 'HTML::FormatText::WithLinks';
+$class = 'HTML::FormatText::WithLinks::AndTables';
+$class = 'HTML::FormatText::W3m';
+$class = 'HTML::FormatText';
+$class = 'HTML::FormatText::Lynx';
 Module::Load::load ($class);
 
 {
-  my $str = $class->format_file ("$Bin/x.html",
-                                  rightmargin => 60,
-                                 # leftmargin => 20,
-                                 # input_charset => 'ascii',
-                                 # input_charset => 'shift-jis',
-                                 # input_charset => 'iso-8859-1',
-                                 # input_charset => 'utf-8',
-                                 # output_charset => 'iso-8859-1'
-                                 # output_charset => 'utf-8'
-                                );
+  my $filename = "$Bin/x.html";
+  # $filename = "/tmp/z.html";
+  my $str = $class->format_file
+    ($filename,
+     rightmargin => 60,
+     # leftmargin => 20,
+     # input_charset => 'ascii',
+     # input_charset => 'shift-jis',
+     # input_charset => 'iso-8859-1',
+     # input_charset => 'utf-8',
+     # output_charset => 'iso-8859-1'
+     # output_charset => 'utf-8'
+     lynx_options => [ '-justify',
+                       '-underscore',
+#                        '-underline_links',
+                       '-with_backspaces',
+                     ],
+     justify => 1,
+    );
   $Data::Dumper::Useqq = 1;
   $Data::Dumper::Purity = 1;
+  print "$class\n";
   print $str;
   print Dumper($str);
   print "utf8 flag ",(utf8::is_utf8($str) ? 'yes' : 'no'), "\n";

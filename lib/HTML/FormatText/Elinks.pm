@@ -19,7 +19,7 @@ use warnings;
 use Carp;
 use base 'HTML::FormatExternal';
 
-our $VERSION = 12;
+our $VERSION = 13;
 
 use constant { DEFAULT_LEFTMARGIN => 3,
                DEFAULT_RIGHTMARGIN => 77 };
@@ -43,43 +43,47 @@ sub program_version {
 
 sub _crunch_command {
   my ($class, $option) = @_;
+  my @command = ('elinks', '-dump', '-force-html');
 
-  #   if (delete $option->{'ansi_colour'}) {
-  #     $option->{'document.dump.color_mode'} = 1;
+  #   if ($option->{'ansi_colour'}) {
+  #     push @command, '-eval', 'set document.dump.color_mode=1';
   #   }
 
-  if (defined (my $width = delete $option->{'width'})) {
-    $option->{'dump-width'} = $width;
-    $option->{'document.browse.margin_width'} = 0;
+  if (defined $option->{'_width'}) {
+    push @command,
+      '-dump-width', $option->{'_width'},
+        '-eval', 'set document.browse.margin_width=0';
   }
 
-  if (my $input_charset = delete $option->{'input_charset'}) {
-    $option->{'document.codepage.assume'} = "'$input_charset'";
-    $option->{'document.codepage.force_assumed'} = 1;
+  if (my $input_charset = $option->{'input_charset'}) {
+    $input_charset = _elinks_mung_charset ($input_charset);
+    push @command,
+      '-eval', ('set document.codepage.assume='
+                . _quote_config_stringarg ($input_charset)),
+        '-eval', 'set document.codepage.force_assumed=1';
 
   }
-  if (my $output_charset = delete $option->{'output_charset'}) {
-    $option->{'dump-charset'} = $output_charset;
+  if (my $output_charset = $option->{'output_charset'}) {
+    push @command, '-dump-charset', _elinks_mung_charset ($output_charset);
   }
 
-  return ('elinks',
-          '-dump',
-          '-force-html',
+  # 'elinks_options' not documented ...
+  return (@command, @{$option->{'elinks_options'} || []});
+}
 
-          # this secret crunching turns say
-          #    'foo' => 123          into -foo 123
-          #    'bar' => undef        into -bar
-          #    'document.html.wrap_nbsp' => 1
-          #       into -eval set document.html.wrap_nbsp=1
-          #
-          # there's probably a good chance of such pass-though only making a
-          # mess, but the idea is to have some way to give arbitrary elinks
-          # options
-          #
-          (map { $_ =~ /\./ ? ('-eval', "set $_=".$option->{$_})
-                   : defined $option->{$_} ? ("-$_", $option->{$_})
-                     : ("-$_") }
-           keys %$option));
+# elinks (version 0.12pre2 at least) is picky about charset names similar to
+# the main links.  Turn "latin-1" into "latin1" for convenience.
+#
+sub _elinks_mung_charset {
+  my ($charset) = @_;
+  $charset =~ s/^(latin)-([0-9]+)$/$1$2/i;
+  return $charset;
+}
+
+sub _quote_config_stringarg {
+  my ($str) = @_;
+  $str =~ s/'/\\'/g;
+  return "'$str'";
 }
 
 1;
@@ -126,6 +130,10 @@ is utf-8.  You can recode other charsets to utf-8 if necessary (this module
 doesn't attempt to do that automatically).
 
 =back
+
+Elinks can be a little picky about its charset names.  This module attempts
+to ease that by for instance turning "latin-1" (not accepted) into "latin1"
+(which is accepted).  A full "ISO-8859-1" etc is accepted too.
 
 =head1 SEE ALSO
 

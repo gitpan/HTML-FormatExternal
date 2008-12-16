@@ -60,6 +60,8 @@ lint:
 	podchecker    $(LINT_FILES)
 pc:
 	perlcritic $(LINT_FILES)
+unused:
+	for i in $(LINT_FILES); do perl -Mwarnings::unused -I lib $$i; done
 
 myman:
 	mv MANIFEST MANIFEST.old

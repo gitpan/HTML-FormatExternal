@@ -19,7 +19,7 @@ use warnings;
 use Carp;
 use base 'HTML::FormatExternal';
 
-our $VERSION = 12;
+our $VERSION = 13;
 
 use constant { DEFAULT_LEFTMARGIN => 3,
                DEFAULT_RIGHTMARGIN => 77 };
@@ -37,31 +37,19 @@ sub program_version {
 sub _crunch_command {
   my ($class, $option) = @_;
 
-  #   if (! delete $option->{'ansi_colour'}) {
-  #     $option->{'bw'} = 1;
+  #   if (! $option->{'ansi_colour'}) {
+  #     push @command, '--bw';
   #   }
-
-  my $width = delete $option->{'width'};
-  delete $option->{'input_charset'};
-  delete $option->{'output_charset'};
-
-  my @command = ('netrik',
-                 '--dump',
-                 '--bw',
-
-                 # this secret crunching turns say
-                 #    'foo' => undef      into --foo
-                 #
-                 # there's probably a good chance of such pass-though only
-                 # making a mess, but the idea is to have some way to give
-                 # arbitrary netrik options
-                 #
-                 (map { "--$_" } keys %$option));
 
   # COLUMNS influences the curses tigetnum("cols") used under --term-width.
   # Slightly hairy, but it has the right effect.
-  $option->{'environ'} = { COLUMNS => $width };
-  return @command;
+  if (defined $option->{'_width'}) {
+    $option->{'ENV'}->{'COLUMNS'} = $option->{'_width'};
+  }
+
+  # 'netrik_options' not documented ...
+  return ('netrik', '--dump', '--bw',
+          @{$option->{'netrik_options'} || []});
 }
 
 1;

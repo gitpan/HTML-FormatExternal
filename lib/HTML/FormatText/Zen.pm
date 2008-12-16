@@ -19,7 +19,7 @@ use warnings;
 use Carp;
 use base 'HTML::FormatExternal';
 
-our $VERSION = 12;
+our $VERSION = 13;
 
 use constant { DEFAULT_LEFTMARGIN => 3,
                DEFAULT_RIGHTMARGIN => 77 };
@@ -44,18 +44,18 @@ sub _crunch_command {
 
   # is it worth enforcing/checking this ?
   #
-  #   if (defined (my $input_charset = delete $option->{'input_charset'})) {
+  #   if (my $input_charset = $option->{'input_charset'}) {
   #     $input_charset =~ /^latin-?1$|^iso-8859-1$/i
   #       or croak "Zen only accepts latin-1 input";
   #   }
-  #   if (defined (my $output_charset = delete $option->{'output_charset'})) {
+  #   if (my $output_charset = $option->{'output_charset'}) {
   #     $output_charset =~ /^latin-?1$|^iso-8859-1$/i
   #       or croak "Zen only produces latin-1 output";
   #   }
 
-  delete $option->{'width'};
-
-  return ('zen', '-i', 'dump');
+  # 'zen_options' not documented ...
+  return ('zen', '-i', 'dump',
+          @{$option->{'zen_options'} || []});
 }
 
 1;

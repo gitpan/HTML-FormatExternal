@@ -19,7 +19,7 @@ use warnings;
 use Carp;
 use base 'HTML::FormatExternal';
 
-our $VERSION = 12;
+our $VERSION = 13;
 
 use constant { DEFAULT_LEFTMARGIN => 2,
                DEFAULT_RIGHTMARGIN => 72 };
@@ -52,37 +52,35 @@ sub program_version {
 
 sub _crunch_command {
   my ($class, $option) = @_;
+  my @command = ('lynx', '-dump', '-force_html');
 
-  if (defined $option->{'width'}) {
+  if (defined $option->{'_width'}) {
+    push @command, '-width', $option->{'_width'};
     if (_have_nomargins()) {
-      $option->{'nomargins'} = undef;
+      push @command, '-nomargins';
     }
   }
-  if (my $input_charset = delete $option->{'input_charset'}) {
-    $option->{'assume_charset'} = $input_charset;
+  if (my $input_charset = $option->{'input_charset'}) {
+    push @command, '-assume_charset', $input_charset;
   }
-  if (my $output_charset = delete $option->{'output_charset'}) {
-    $option->{'display_charset'} = $output_charset;
+  if (my $output_charset = $option->{'output_charset'}) {
+    push @command, '-display_charset', $output_charset;
   }
 
-  return ('lynx',
-          '-dump',
-          '-force_html',
+  # not documented ... yet
+  if ($option->{'justify'}) {
+    push @command, '-justify';
+  }
 
-          # this secret crunching turns say
-          #    'foo' => 123          into -foo=123
-          #    'bar' => undef        into -bar
-          #
-          # there's probably a good chance of such pass-though only making a
-          # mess, but the idea is to have some way to give arbitrary lynx
-          # options
-          #
-          (map { defined $option->{$_} ? "-$_=".$option->{$_}
-                   : "-$_" }
-           keys %$option));
+  # -underscore gives _foo_ style for <u> underline, though it seems to need
+  # -with_backspaces to come out.  It doesn't use backspaces it seems,
+  # unlike the name would suggest ...
+
+  # 'lynx_options' not documented ...
+  return (@command, @{$option->{'lynx_options'} || []});
 }
 
-  1;
+1;
 __END__
 
 =head1 NAME
@@ -122,6 +120,21 @@ which are supported by C<HTML::FormatText::Lynx>, with the following caveats
 Prior to the C<-nomargins> option of Lynx 2.8.6dev.12 (June 2005) an
 additional 3 space margin is always applied within the requested left and
 right positions.
+
+=item C<input_charset>, C<output_charset>
+
+Note that "latin-1" etc is not accepted, it must be "iso-8859-1" etc.
+
+=back
+
+=head2 Extra Options
+
+=over 4
+
+=item C<justify> (boolean)
+
+If true then C<-justify> is passed to lynx to get all lines in the paragraph
+padded out with extra spaces to the given C<rightmargin> or default width.
 
 =back
 

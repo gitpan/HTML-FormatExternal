@@ -20,13 +20,13 @@ use Carp;
 
 # Perl6::Slurp demands 5.8 anyway, don't think need to ask for 5.8 here to
 # be sure of getting multi-arg open() of piped command in that module
-#
 # use 5.008;
 
-our $VERSION = 12;
+our $VERSION = 13;
 
 # set this to 1 for some diagnostic prints, set to 2 to preserve tempfiles
-# (or with the usual File::Temp settings)
+# (also possible with the usual File::Temp settings)
+#
 use constant DEBUG => 0;
 
 sub new {
@@ -40,11 +40,11 @@ sub format {
 }
 
 # format_string() includes some secret experimental wide-char handling: if
-# the input string is wide then it's passed to the program in the specified
-# input_charset and output_charset and decoded back to a wide string at the
-# end.  The charsets default to utf-8 input, and to _WIDE_CHARSET for output
-# (allowing links to emit merely latin1), the idea being to preserve wide
-# chars.
+# the input string is wide then it's passed to and from the program in the
+# specified input_charset and output_charset, but then decoded back to a
+# wide string at the end.  The charsets default to utf-8 input, and to
+# _WIDE_CHARSET for output.  Links.pm overrides _WIDE_CHARSET since it can
+# only emit latin1 (it seems).
 # 
 use constant _WIDE_CHARSET => 'UTF-8';
 
@@ -80,52 +80,53 @@ sub format_string {
   return $str;
 }
 
-# Left margin is synthesized by add spaces afterwards because the various
+# Left margin is synthesized by adding spaces afterwards because the various
 # programs have pretty variable support for a specified margin.
-#   * w3m doesn't seem to have a left margin option at all,
-#   * lynx has one but it's too well hidden in its style sheet or something,
-#   * elinks has document.browse.margin_width but it's limited to 8 or so,
-#   * netrik doesn't seem to have one at all,
+#   * w3m doesn't seem to have a left margin option at all
+#   * lynx has one but it's too well hidden in its style sheet or something
+#   * elinks has document.browse.margin_width but it's limited to 8 or so
+#   * netrik doesn't seem to have one at all
 #
 sub format_file {
   my ($class, $filename, %option) = @_;
 
-  # If neither leftmargin nor rightmargin are specified then 'width' is
+  # If neither leftmargin nor rightmargin are specified then '_width' is
   # unset and the _crunch_command() funcs leave it to the program defaults.
   #
-  # If either leftmargin or rightmargin are set then 'width' is established
+  # If either leftmargin or rightmargin are set then '_width' is established
   # and the _crunch_command() funcs use it and and zero left margin, then
-  # the actual left margin is applied below.  The DEFAULT_LEFTMARGIN and
-  # DEFAULT_RIGHTMARGIN establish the defaults when just one of the two is
-  # set.  Not great hard coding those values, but the programs don't have
-  # anything good to set one but not the other.
+  # the actual left margin is applied below.
   #
-  my $leftmargin  = delete $option{'leftmargin'};
-  my $rightmargin = delete $option{'rightmargin'};
+  # The DEFAULT_LEFTMARGIN and DEFAULT_RIGHTMARGIN establish the defaults
+  # when just one of the two is set.  Not great hard coding those values,
+  # but the programs don't have anything good to set one but not the other.
+  #
+  my $leftmargin  = $option{'leftmargin'};
+  my $rightmargin = $option{'rightmargin'};
   if (defined $leftmargin || defined $rightmargin) {
     if (! defined $leftmargin)  { $leftmargin  = $class->DEFAULT_LEFTMARGIN; }
     if (! defined $rightmargin) { $rightmargin = $class->DEFAULT_RIGHTMARGIN; }
-    $option{'width'} = $rightmargin - $leftmargin;
+    $option{'_width'} = $rightmargin - $leftmargin;
   }
 
   my @command = ('-|', $class->_crunch_command(\%option), $filename);
-  my $environ = $option{'environ'} || {};
+  my $env = $option{'ENV'} || {};
   if (DEBUG) {
     require Data::Dumper;
     print Data::Dumper->new([\@command],['command'])->Dump;
+    if (%$env) { print Data::Dumper->new($env,['env'])->Dump; }
   }
-
 
   require Perl6::Slurp;
   my $str = do {
     local %ENV = %ENV;
-    @ENV{keys %$environ} = values %$environ;
+    @ENV{keys %$env} = values %$env; # overrides
     Perl6::Slurp::slurp (@command);
   };
 
   if (defined $leftmargin) {
     my $fill = ' ' x $leftmargin;
-    $str =~ s/^(.)/$fill$1/mg;
+    $str =~ s/^(.)/$fill$1/mg;  # non-empty lines only
   }
   return $str;
 }
@@ -134,15 +135,22 @@ sub _run_version {
   my ($self_or_class, @command) = @_;
   require Perl6::Slurp;
 
-  # no warning suppression when debugging
-  local $SIG{__WARN__} = (DEBUG ? $SIG{__WARN__}
-                          : \&_warn_suppress_exec);
-  my $version = eval { Perl6::Slurp::slurp ('-|', @command) };
+  my $version = do {
+    # no warning suppression when debugging
+    local $SIG{__WARN__} = (DEBUG ? $SIG{__WARN__}
+                            : \&_warn_suppress_exec);
+    eval { Perl6::Slurp::slurp ('-|', @command) }
+  };
 
   # strip blank lines at end of lynx
   if (defined $version) { $version =~ s/\n{2,}$/\n/s; }
   return $version;
 }
+
+# In Perl6::Slurp version 0.03 open() gives its usual warning if it can't
+# run the program, but Perl6::Slurp then croaks with that same message.
+# Suppress the warning in the interests of avoiding duplication.
+#
 sub _warn_suppress_exec {
   $_[0] =~ /Can't exec/
     or warn $_[0];
@@ -170,10 +178,10 @@ plain text by dumping it through the respective external programs.
 The module interfaces are compatible with C<HTML::Formatter> modules like
 C<HTML::FormatText>, but the programs do all the work.
 
-Compatible formatting options are provided where possible, like
+Common formatting options are used where possible, like C<leftmargin> and
 C<rightmargin>, so just by switching the class you can use a different
-program (or plain C<HTML::FormatText>) according to personal preference or
-what you've got.
+program (or plain C<HTML::FormatText>) according to personal preference, or
+strengths and weaknesses, or what you've got.
 
 There's nothing particularly difficult about piping through these programs,
 but a unified interface hides details like how to set margins and how to
@@ -182,7 +190,7 @@ force input or output charsets.
 =head1 FUNCTIONS
 
 Each of the classes above provide the following functions.  The C<XXX> in
-the class names is a placeholder for any of C<Elinks>, C<Lynx>, etc as
+the class names here is a placeholder for any of C<Elinks>, C<Lynx>, etc as
 above.
 
 =head2 Formatter Compatible Functions
@@ -208,14 +216,15 @@ Create a formatter object with the given options.  In the current
 implementation an object doesn't do much more than remember the options for
 future use.
 
+    $formatter = HTML::FormatText::Elinks->new(rightmargin => 60);
+
 =item C<< $text = $formatter->format ($tree_or_string) >>
 
-Run the formatter program the given C<HTML::TreeBuilder> tree or string,
-using the options in the object, and return the formatted result as a
-string.
+Run the C<$formatter> program on a C<HTML::TreeBuilder> tree or a string,
+using the options in C<$formatter>, and return the result as a string.
 
-A TreeBuilder tree argument (ie. a C<HTML::Element>) is for compatibility
-with C<HTML::Formatter>.  The tree is simply turned into a string with
+A TreeBuilder argument (ie. a C<HTML::Element>) is for compatibility with
+C<HTML::Formatter>.  The tree is simply turned into a string with
 C<< $tree->as_HTML >> to pass to the program, so if you've got a string
 already then give that instead of a tree.
 
@@ -237,9 +246,18 @@ Return the version number of the formatter program as reported by its
 C<--version> or similar option.  If the formatter program is not available
 the return is C<undef>.
 
-C<program_version> is the number alone like "2.8.7dev.10".
-C<program_full_version> is the entire output, which may include build
-options, copyright notice, etc.
+C<program_version> is the number alone.  C<program_full_version> is the
+entire output, which may include build options, copyright notice, etc.
+
+    # eg. "2.8.7dev.10"
+    $str = HTML::FormatText::Lynx->program_version();
+
+    # eg. "w3m version w3m/0.5.2, options lang=en,m17n,image,..."
+    $str = HTML::FormatText::W3m->program_full_version();
+
+(The version number of the Perl module itself is available with for instance
+C<< HTML::FormatText::Netrik->VERSION >> or C<< $formatter->VERSION >> in
+the usual way, see L<UNIVERSAL>.)
 
 =back
 
@@ -255,7 +273,7 @@ C<HTML::Formatter> take the lead on how that might work.)
 
 The result string is bytes similarly, encoded in whatever the respective
 programs produce.  This is usually the locale charset but you can force it
-with the C<output_charset> option to be sure of getting what you want.
+with the C<output_charset> option to be sure.
 
 =head1 OPTIONS
 
@@ -276,9 +294,8 @@ width, so for instance 60 would mean the longest line is 60 characters
 (inclusive of any C<leftmargin>).  These options are compatible with
 C<HTML::FormatText>.
 
-C<rightmargin> is not necessarily a hard limit.  Some of the formatter
-programs will exceed it in a HTML literal C<< <pre> >> section, or a run of
-C<&nbsp;>, or similar.
+C<rightmargin> is not necessarily a hard limit.  Some of the programs will
+exceed it in a HTML literal C<< <pre> >>, or a run of C<&nbsp;>, or similar.
 
 =item C<< input_charset => STRING >>
 
@@ -304,7 +321,10 @@ straightforward.
 
 L<HTML::FormatText::Elinks>, L<HTML::FormatText::Links>,
 L<HTML::FormatText::Netrik>, L<HTML::FormatText::Lynx>,
-L<HTML::FormatText::W3m>, L<HTML::FormatText::Zen>
+L<HTML::FormatText::W3m>, L<HTML::FormatText::Zen>,
+
+L<HTML::FormatText>, L<HTML::FormatText::WithLinks>,
+L<HTML::FormatText::WithLinks::AndTables>
 
 =head1 HOME PAGE
 

@@ -19,7 +19,7 @@ use warnings;
 use Carp;
 use base 'HTML::FormatExternal';
 
-our $VERSION = 12;
+our $VERSION = 13;
 
 use constant { DEFAULT_LEFTMARGIN => 0,
                DEFAULT_RIGHTMARGIN => 80 };
@@ -41,37 +41,23 @@ sub program_version {
 
 sub _crunch_command {
   my ($class, $option) = @_;
+  my @command = ('w3m', '-dump', '-T', 'text/html');
 
-  # w3m seems to use one less than the given cols, presumably designed with
+  # w3m seems to use one less than the given -cols, presumably designed with
   # a tty in mind
-  if (defined (my $width = delete $option->{'width'})) {
-    $option->{'cols'} = $width + 1;
+  if (defined $option->{'_width'}) {
+    push @command, '-cols', $option->{'_width'} + 1;
   }
 
-  if (my $input_charset = delete $option->{'input_charset'}) {
-    $option->{'I'} = $input_charset;
+  if ($option->{'input_charset'}) {
+    push @command, '-I', $option->{'input_charset'};
   }
-  if (my $output_charset = delete $option->{'output_charset'}) {
-    $option->{'O'} = $output_charset;
+  if ($option->{'output_charset'}) {
+    push @command, '-O', $option->{'output_charset'};
   }
 
-  return ('w3m',
-          '-dump',
-          '-T', 'text/html',
-
-          # this secret crunching turns say
-          #    'o graphic_char' => 1 into -o graphic_char=1
-          #    'foo' => 123          into -foo 123
-          #    'bar' => undef        into -bar
-          #
-          # there's probably a good chance of such pass-though only making a
-          # mess, but the idea is to have some way to give arbitrary w3m
-          # options and config options
-          #
-          (map { $_ =~ /^o (.*)/s ? ('-o', "$1=".$option->{$_})
-                   : defined $option->{$_} ? ("-$_", $option->{$_})
-                     : "-$_"}
-           keys %$option));
+  # 'w3m_options' not documented ...
+  return (@command, @{$option->{'w3m_options'} || []});
 }
 
 sub new {

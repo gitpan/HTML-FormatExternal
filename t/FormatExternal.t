@@ -20,10 +20,17 @@
 use strict;
 use warnings;
 use HTML::FormatExternal;
-use Test::More tests => 2 + 6 * 11;
+use Test::More tests => 2 + 6*11 + 5;
 
-ok ($HTML::FormatExternal::VERSION >= 12);
-ok (HTML::FormatExternal->VERSION  >= 12);
+ok ($HTML::FormatExternal::VERSION >= 13);
+ok (HTML::FormatExternal->VERSION  >= 13);
+
+# Cribs:
+#
+# Test::More::like() ends up spinning a qr// through a further /$re/ which
+# loses any /m modifier, prior to perl 5.10.0 at least.  So /m is avoided in
+# favour of some (^|\n) and ($|{\r\n]) forms.
+
 
 sub is_undef_or_string {
   my ($obj) = @_;
@@ -49,9 +56,11 @@ foreach my $class (qw(HTML::FormatText::Elinks
     or die $@;
 
   is ($class->VERSION,
-      $HTML::FormatExternal::VERSION);
+      $HTML::FormatExternal::VERSION,
+      "$class VERSION method");
   is (do { no strict 'refs'; ${"${class}::VERSION"} },
-      $HTML::FormatExternal::VERSION);
+      $HTML::FormatExternal::VERSION,
+      "$class VERSION variable");
 
   #
   # program_full_version
@@ -121,7 +130,7 @@ foreach my $class (qw(HTML::FormatText::Elinks
 
       my $str = $class->format_string ('<html><body>Hello</body><html>',
                                        leftmargin => 0);
-      like ($str, qr/^Hello/m,  # /m to allow leading blank lines
+      like ($str, qr/(^|\n)Hello/,  # allowing for leading blank lines
             "$class through class, with leftmargin 0");
     }
 
@@ -145,10 +154,22 @@ foreach my $class (qw(HTML::FormatText::Elinks
         $dumper->Useqq (1);
         diag ($dumper->Dump);
       }
-      like ($str, qr/^123 567 9012$/m,
+      like ($str, qr/(^|\n)123 567 9012($|[\r\n])/m,
             "$class through class, with leftmargin 0 rightmargin 12");
     }
   }
 }
+
+is (HTML::FormatText::Elinks::_quote_config_stringarg(''),
+    "''");
+is (HTML::FormatText::Elinks::_quote_config_stringarg('abc'),
+    "'abc'");
+is (HTML::FormatText::Elinks::_quote_config_stringarg("x'y'z"),
+    "'x\\'y\\'z'");
+
+is (HTML::FormatText::Links::_links_mung_charset ('latin-1'),
+    "latin1");
+is (HTML::FormatText::Links::_links_mung_charset ('LATIN-2'),
+    "LATIN2");
 
 exit 0;

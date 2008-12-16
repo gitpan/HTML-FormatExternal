@@ -17,6 +17,11 @@ along with HTML-FormatExternal.  If not, see http://www.gnu.org/licenses/
 
 
 
+Version 13, December 2008
+    - new justify option for lynx
+    - ignore unrecognised options, for safety
+    - fix tests qr//m no good pre perl 5.10
+
 Version 12, December 2008
     - mucho test count fixes
     - cope with older links and lynx without nomargin

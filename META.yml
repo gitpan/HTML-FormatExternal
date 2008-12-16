@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                HTML-FormatExternal
-version:             12
+version:             13
 abstract:            HTML to text formatting using external programs.
 license:             gpl
 author:              
