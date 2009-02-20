@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright 2008 Kevin Ryde
+# Copyright 2008, 2009 Kevin Ryde
 
 # This file is part of HTML-FormatExternal.
 #
@@ -20,10 +20,17 @@
 use strict;
 use warnings;
 use HTML::FormatExternal;
-use Test::More tests => 2 + 6*11 + 5;
+use Test::More tests => 2 + 7*11;
 
-ok ($HTML::FormatExternal::VERSION >= 13);
-ok (HTML::FormatExternal->VERSION  >= 13);
+my $want_version = 14;
+ok ($HTML::FormatExternal::VERSION >= $want_version,
+    'VERSION variable');
+ok (HTML::FormatExternal->VERSION  >= $want_version,
+    'VERSION class method');
+HTML::FormatExternal->VERSION ($want_version);
+
+## no critic (ProtectPrivateSubs)
+
 
 # Cribs:
 #
@@ -34,18 +41,23 @@ ok (HTML::FormatExternal->VERSION  >= 13);
 
 sub is_undef_or_string {
   my ($obj) = @_;
-  return ! defined $obj || ! ref $obj;
+  if (! defined $obj) { return 1; }
+  if (ref $obj) { return 0; }
+  if ($obj eq '') { return 0; } # disallow empty
+  return 1;
 }
 
 sub is_undef_or_one_line_string {
   my ($obj) = @_;
   if (! defined $obj) { return 1; }
   if (ref $obj) { return 0; }
+  if ($obj eq '') { return 0; } # disallow empty
   if ($obj =~ /\n/) { return 0; }
   return 1;
 }
 
 foreach my $class (qw(HTML::FormatText::Elinks
+                      HTML::FormatText::Html2text
                       HTML::FormatText::Links
                       HTML::FormatText::Lynx
                       HTML::FormatText::Netrik
@@ -79,6 +91,9 @@ foreach my $class (qw(HTML::FormatText::Elinks
 
   #
   # program_version
+  #
+  # Netrik is an empty string as it doesn't seem to print its version,
+  # others have to be non-empty
   #
   { my $version = $class->program_version();
     require Data::Dumper;
@@ -154,22 +169,10 @@ foreach my $class (qw(HTML::FormatText::Elinks
         $dumper->Useqq (1);
         diag ($dumper->Dump);
       }
-      like ($str, qr/(^|\n)123 567 9012($|[\r\n])/m,
+      like ($str, qr/(^|\n)123 567 9012($|[\r\n])/,
             "$class through class, with leftmargin 0 rightmargin 12");
     }
   }
 }
-
-is (HTML::FormatText::Elinks::_quote_config_stringarg(''),
-    "''");
-is (HTML::FormatText::Elinks::_quote_config_stringarg('abc'),
-    "'abc'");
-is (HTML::FormatText::Elinks::_quote_config_stringarg("x'y'z"),
-    "'x\\'y\\'z'");
-
-is (HTML::FormatText::Links::_links_mung_charset ('latin-1'),
-    "latin1");
-is (HTML::FormatText::Links::_links_mung_charset ('LATIN-2'),
-    "LATIN2");
 
 exit 0;

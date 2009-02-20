@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright 2008 Kevin Ryde
+# Copyright 2008, 2009 Kevin Ryde
 
 # This file is part of HTML-FormatExternal.
 #
@@ -28,9 +28,9 @@ WriteMakefile
    VERSION_FROM => 'lib/HTML/FormatExternal.pm',
    PREREQ_PM    => {
                     # actually Perl6::Slurp depends on perl 5.8 which has
-                    # File::Temp and Test::More builtin, and we need 5.8 for
-                    # the slurp use of multi-arg pipe open(), so probably
-                    # don't need to list them here
+                    # File::Temp and Test::More builtin, and we probably
+                    # want 5.8 for the slurp to use a multi-arg pipe open(),
+                    # so probably don't need to list these explicitly
                     #
                     'File::Temp' => 0,
                     'Test::More' => 0,
@@ -43,11 +43,17 @@ WriteMakefile
    SIGN         => 1,
 
    EXTRA_META => <<'HERE',
+optional_features:
+    maximum_tests:
+        description: Have "make test" do as much as possible.
+        requires:
+            Test::Pod: 1.00
 no_index:
     directory:
         - devel
 resources:
     homepage: http://www.geocities.com/user42_kevin/html-formatexternal/index.html
+    license: http://www.gnu.org/licenses/#GPL
 HERE
   );
 
@@ -57,8 +63,8 @@ sub MY::postamble {
 LINT_FILES = $(TO_INST_PM) t/*.t examples/*.pl devel/*.pl
 lint:
 	perl -MO=Lint $(LINT_FILES)
-	podchecker    $(LINT_FILES)
 pc:
+	-podchecker $(LINT_FILES)
 	perlcritic $(LINT_FILES)
 unused:
 	for i in $(LINT_FILES); do perl -Mwarnings::unused -I lib $$i; done

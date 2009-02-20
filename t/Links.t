@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 # Copyright 2008, 2009 Kevin Ryde
 
 # This file is part of HTML-FormatExternal.
@@ -12,26 +14,19 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# You should have received a copy of the GNU General Public License along
-# with HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
+# You can get a copy of the GNU General Public License online at
+# http://www.gnu.org/licenses.
 
-^#
-/#
-/\.#
-~$
-^\.#
-\.old$
-\.bak$
-^Makefile$
-\.tar\.gz$
-^backup
-^misc
-^blib
-^pm_to_blib
-^HTML-FormatExternal
-\.deb$
-dist-deb
-^maybe
-^samples
-^msg
-^test-dist
+use strict;
+use warnings;
+use HTML::FormatText::Links;
+use Test::More tests => 2;
+
+## no critic (ProtectPrivateSubs)
+
+is (HTML::FormatText::Links::_links_mung_charset ('latin-1'),
+    "latin1");
+is (HTML::FormatText::Links::_links_mung_charset ('LATIN-2'),
+    "LATIN2");
+
+exit 0;

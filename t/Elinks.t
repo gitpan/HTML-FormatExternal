@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 # Copyright 2008, 2009 Kevin Ryde
 
 # This file is part of HTML-FormatExternal.
@@ -12,26 +14,21 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# You should have received a copy of the GNU General Public License along
-# with HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
+# You can get a copy of the GNU General Public License online at
+# http://www.gnu.org/licenses.
 
-^#
-/#
-/\.#
-~$
-^\.#
-\.old$
-\.bak$
-^Makefile$
-\.tar\.gz$
-^backup
-^misc
-^blib
-^pm_to_blib
-^HTML-FormatExternal
-\.deb$
-dist-deb
-^maybe
-^samples
-^msg
-^test-dist
+use strict;
+use warnings;
+use HTML::FormatText::Elinks;
+use Test::More tests => 3;
+
+## no critic (ProtectPrivateSubs)
+
+is (HTML::FormatText::Elinks::_quote_config_stringarg(''),
+    "''");
+is (HTML::FormatText::Elinks::_quote_config_stringarg('abc'),
+    "'abc'");
+is (HTML::FormatText::Elinks::_quote_config_stringarg("x'y'z"),
+    "'x\\'y\\'z'");
+
+exit 0;

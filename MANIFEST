@@ -11,6 +11,7 @@ devel/x.html
 examples/demo.pl
 lib/HTML/FormatExternal.pm
 lib/HTML/FormatText/Elinks.pm
+lib/HTML/FormatText/Html2text.pm
 lib/HTML/FormatText/Links.pm
 lib/HTML/FormatText/Lynx.pm
 lib/HTML/FormatText/Netrik.pm
@@ -19,8 +20,11 @@ lib/HTML/FormatText/Zen.pm
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
+README
 SIGNATURE
 t/devel/More.t
+t/Elinks.t
 t/FormatExternal.t
+t/Links.t
 t/pod.t
 META.yml                                 Module meta-data (added by MakeMaker)

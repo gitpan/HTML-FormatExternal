@@ -1,4 +1,4 @@
-# Copyright 2008 Kevin Ryde
+# Copyright 2008, 2009 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -14,15 +14,16 @@
 # with HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
 
 package HTML::FormatText::Netrik;
+use 5.006;
 use strict;
 use warnings;
-use Carp;
-use base 'HTML::FormatExternal';
+use HTML::FormatExternal;
+our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 13;
+our $VERSION = 14;
 
-use constant { DEFAULT_LEFTMARGIN => 3,
-               DEFAULT_RIGHTMARGIN => 77 };
+use constant DEFAULT_LEFTMARGIN => 3;
+use constant DEFAULT_RIGHTMARGIN => 77;
 
 sub program_full_version {
   my ($self_or_class) = @_;
@@ -31,25 +32,28 @@ sub program_full_version {
 sub program_version {
   my ($self_or_class) = @_;
   my $version = $self_or_class->program_full_version;
-  return (defined $version ? '' : undef);
+  if (! defined $version) { return undef; }
+  # as of netrik 1.15.7 there doesn't seem to be any option that prints the
+  # version number, it's possible it's not compiled into the binary at all
+  return '(not reported)';
 }
 
 sub _crunch_command {
-  my ($class, $option) = @_;
+  my ($class, $options) = @_;
 
-  #   if (! $option->{'ansi_colour'}) {
+  #   if (! $options->{'ansi_colour'}) {
   #     push @command, '--bw';
   #   }
 
   # COLUMNS influences the curses tigetnum("cols") used under --term-width.
   # Slightly hairy, but it has the right effect.
-  if (defined $option->{'_width'}) {
-    $option->{'ENV'}->{'COLUMNS'} = $option->{'_width'};
+  if (defined $options->{'_width'}) {
+    $options->{'ENV'}->{'COLUMNS'} = $options->{'_width'};
   }
 
   # 'netrik_options' not documented ...
   return ('netrik', '--dump', '--bw',
-          @{$option->{'netrik_options'} || []});
+          @{$options->{'netrik_options'} || []});
 }
 
 1;
@@ -83,9 +87,17 @@ L<http://netrik.sourceforge.net/>
 The module interface is compatible with formatters like C<HTML::FormatText>,
 but all parsing etc is done by netrik.
 
-See C<HTML::FormatExternal> for the formatting functions and options, except
-the charset overrides have no effect.  Input might be single-byte only, and
-output probably just follows the input (as of netrik 1.15.7).
+See C<HTML::FormatExternal> for the formatting functions and options, with
+the following caveats,
+
+=over 4
+
+=item C<input_charset>, C<output_charset>
+
+These charset overrides have no effect.  Input might be single-byte only,
+and output probably follows the input (as of netrik 1.15.7).
+
+=back
 
 =head1 SEE ALSO
 
@@ -97,7 +109,7 @@ L<http://www.geocities.com/user42_kevin/html-formatexternal/index.html>
 
 =head1 LICENSE
 
-Copyright 2008 Kevin Ryde
+Copyright 2008, 2009 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the

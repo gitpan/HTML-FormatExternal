@@ -1,4 +1,4 @@
-# Copyright 2008 Kevin Ryde
+# Copyright 2008, 2009 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -14,25 +14,32 @@
 # with HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
 
 package HTML::FormatText::Lynx;
+use 5.006;
 use strict;
 use warnings;
-use Carp;
-use base 'HTML::FormatExternal';
+use HTML::FormatExternal;
+our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 13;
+our $VERSION = 14;
 
-use constant { DEFAULT_LEFTMARGIN => 2,
-               DEFAULT_RIGHTMARGIN => 72 };
+use constant DEFAULT_LEFTMARGIN => 2;
+use constant DEFAULT_RIGHTMARGIN => 72;
 
-my $help_done = 0;
-my $have_nomargins;
-sub _have_nomargins {
-  $help_done ||= do {
-    my $help = __PACKAGE__->_run_version ('lynx', '-help');
-    $have_nomargins = ($help =~ /-nomargins/);
-    1;
-  };
-  return $have_nomargins;
+{
+  my $help_done = 0;
+  my $have_nomargins;
+
+  # return true if the "-nomargins" option is available (new in Lynx
+  # 2.8.6dev.12 from June 2005)
+  sub _have_nomargins {
+    my ($class) = @_;
+    $help_done ||= do {
+      my $help = $class->_run_version ('lynx', '-help');
+      $have_nomargins = ($help =~ /-nomargins/);
+      1;
+    };
+    return $have_nomargins;
+  }
 }
 
 sub program_full_version {
@@ -51,24 +58,22 @@ sub program_version {
 }
 
 sub _crunch_command {
-  my ($class, $option) = @_;
+  my ($class, $options) = @_;
   my @command = ('lynx', '-dump', '-force_html');
 
-  if (defined $option->{'_width'}) {
-    push @command, '-width', $option->{'_width'};
-    if (_have_nomargins()) {
+  if (defined $options->{'_width'}) {
+    push @command, '-width', $options->{'_width'};
+    if ($class->_have_nomargins) {
       push @command, '-nomargins';
     }
   }
-  if (my $input_charset = $option->{'input_charset'}) {
+  if (my $input_charset = $options->{'input_charset'}) {
     push @command, '-assume_charset', $input_charset;
   }
-  if (my $output_charset = $option->{'output_charset'}) {
+  if (my $output_charset = $options->{'output_charset'}) {
     push @command, '-display_charset', $output_charset;
   }
-
-  # not documented ... yet
-  if ($option->{'justify'}) {
+  if ($options->{'justify'}) {
     push @command, '-justify';
   }
 
@@ -77,7 +82,7 @@ sub _crunch_command {
   # unlike the name would suggest ...
 
   # 'lynx_options' not documented ...
-  return (@command, @{$option->{'lynx_options'} || []});
+  return (@command, @{$options->{'lynx_options'} || []});
 }
 
 1;
@@ -134,7 +139,8 @@ Note that "latin-1" etc is not accepted, it must be "iso-8859-1" etc.
 =item C<justify> (boolean)
 
 If true then C<-justify> is passed to lynx to get all lines in the paragraph
-padded out with extra spaces to the given C<rightmargin> or default width.
+padded out with extra spaces to the given C<rightmargin> (or default right
+margin).
 
 =back
 
@@ -148,7 +154,7 @@ L<http://www.geocities.com/user42_kevin/html-formatexternal/index.html>
 
 =head1 LICENSE
 
-Copyright 2008 Kevin Ryde
+Copyright 2008, 2009 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the

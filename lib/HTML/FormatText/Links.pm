@@ -1,4 +1,4 @@
-# Copyright 2008 Kevin Ryde
+# Copyright 2008, 2009 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -14,31 +14,35 @@
 # with HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
 
 package HTML::FormatText::Links;
+use 5.006;
 use strict;
 use warnings;
-use Carp;
-use base 'HTML::FormatExternal';
+use HTML::FormatExternal;
+our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 13;
+our $VERSION = 14;
 
-use constant { DEFAULT_LEFTMARGIN => 3,
-               DEFAULT_RIGHTMARGIN => 77,
-               _WIDE_CHARSET => 'iso-8859-1' };
+use constant DEFAULT_LEFTMARGIN => 3;
+use constant DEFAULT_RIGHTMARGIN => 77;
+use constant _WIDE_CHARSET => 'iso-8859-1';
 
 # It seems maybe some people make "links" an alias for "elinks", and the
-# latter doesn't have -html-margin.  Maybe it'd be worth adapting to elinks
-# style "set document.browse.margin_width=0" in that case, but for now just
-# don't use it if it doesn't work.
+# latter doesn't have -html-margin.  Maybe it'd be worth adapting to use
+# elinks style "set document.browse.margin_width=0" in that case, but for
+# now just don't use it if it doesn't work.
 #
-my $help_done;
-my $have_html_margin;
-sub _have_html_margin {
-  $help_done ||= do {
-    my $help = __PACKAGE__->_run_version ('links', '-help');
-    $have_html_margin = ($help =~ /-html-margin/);
-    1;
-  };
-  return $have_html_margin;
+{
+  my $help_done;
+  my $have_html_margin;
+  sub _have_html_margin {
+    $help_done ||= do {
+      my ($class) = @_;
+      my $help = $class->_run_version ('links', '-help');
+      $have_html_margin = ($help =~ /-html-margin/);
+      1;
+    };
+    return $have_html_margin;
+  }
 }
 
 sub program_full_version {
@@ -50,34 +54,34 @@ sub program_version {
   my $version = $self_or_class->program_full_version;
   if (! defined $version) { return undef; }
 
-  # eg. "Links 2.2"
-  $version =~ /^Links (.*?) /i
+  # first line like "Links 1.00pre12" or "Links 2.2"
+  $version =~ /^Links (.*)/i
     or $version =~ /^(.*)/;  # whole first line if format not recognised
   return $1;
 }
 
 sub _crunch_command {
-  my ($class, $option) = @_;
+  my ($class, $options) = @_;
   my @command = ('links', '-dump', '-force-html');
 
-  if (defined $option->{'_width'}) {
-    push @command, '-width', $option->{'_width'};
-    if (_have_html_margin()) {
+  if (defined $options->{'_width'}) {
+    push @command, '-width', $options->{'_width'};
+    if ($class->_have_html_margin) {
       push @command, '-html-margin', 0;
     }
   }
 
-  if (my $input_charset = $option->{'input_charset'}) {
+  if (my $input_charset = $options->{'input_charset'}) {
     push @command,
       '-html-assume-codepage', _links_mung_charset ($input_charset),
         '-html-hard-assume', 1;
   }
-  if (my $output_charset = $option->{'output_charset'}) {
+  if (my $output_charset = $options->{'output_charset'}) {
     push @command, '-codepage', _links_mung_charset ($output_charset);
   }
 
   # 'links_options' not documented ...
-  return (@command, @{$option->{'links_options'} || []});
+  return (@command, @{$options->{'links_options'} || []});
 }
 
 # links (version 2.2 at least) accepts "latin1" but not "latin-1".  The
@@ -128,8 +132,8 @@ C<HTML::FormatText::Links>, with the following caveats.
 
 =item C<leftmargin>, C<rightmargin>
 
-In past versions of links without the C<-html-margin> option you get an
-extra 3 spaces within the requested left and right margins.
+In past versions of links without the C<-html-margin> option you always get
+an extra 3 spaces within the requested left and right margins.
 
 =item C<input_charset>, C<output_charset>
 
@@ -153,7 +157,7 @@ L<http://www.geocities.com/user42_kevin/html-formatexternal/index.html>
 
 =head1 LICENSE
 
-Copyright 2008 Kevin Ryde
+Copyright 2008, 2009 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the

@@ -1,4 +1,4 @@
-# Copyright 2008 Kevin Ryde
+# Copyright 2008, 2009 Kevin Ryde
 
 # This file is part of HTML-FormatExternal.
 #
@@ -19,11 +19,15 @@
 
 # Build-Depends:
 #
-#   libhtml-tree-perl has HTML::TreeBuilder used by a couple of tests.
-#   The programs are used by the tests likewise.  But demanding all
-#   that is a bit tedious for a manual build, and in particular "zen"
-#   is not in the archive as of Dec 08.
-
+#   "libhtml-tree-perl" could be in Build-Depends for
+#   HTML::TreeBuilder used by a couple of tests.  The programs are
+#   used by the tests likewise.  But demanding all that is a bit
+#   tedious for a manual build (and in particular "zen" is not in
+#   debian as of Feb 2009).
+#
+#   "libtest-pod-perl (>= 1.00)" could be in Build-Depends for more
+#   tests, but it's optional and just makes the build tools drag in
+#   more stuff.
 
 Source: libhtml-formatexternal-perl
 Section: perl
@@ -41,6 +45,6 @@ Recommends: lynx | elinks | links | netrik | w3m | zen
 Suggests: elinks, links, lynx, netrik, w3m, zen
 Description: Format HTML to text in perl using external programs
  HTML::FormatExternal turns HTML into plain text by running it through
- one of elinks, links, lynx, netrik, w3m or zen.  The programming
- interface is compatible with HTML::FormatText and other
+ one of elinks, html2text, links, lynx, netrik, w3m or zen.  The
+ programming interface is compatible with HTML::FormatText and other
  HTML::Formatter classes.

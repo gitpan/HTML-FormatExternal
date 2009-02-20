@@ -1,4 +1,4 @@
-# Copyright 2008 Kevin Ryde
+# Copyright 2008, 2009 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -14,15 +14,16 @@
 # with HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
 
 package HTML::FormatText::Elinks;
+use 5.006;
 use strict;
 use warnings;
-use Carp;
-use base 'HTML::FormatExternal';
+use HTML::FormatExternal;
+our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 13;
+our $VERSION = 14;
 
-use constant { DEFAULT_LEFTMARGIN => 3,
-               DEFAULT_RIGHTMARGIN => 77 };
+use constant DEFAULT_LEFTMARGIN => 3;
+use constant DEFAULT_RIGHTMARGIN => 77;
 
 sub program_full_version {
   my ($self_or_class) = @_;
@@ -42,20 +43,20 @@ sub program_version {
 }
 
 sub _crunch_command {
-  my ($class, $option) = @_;
+  my ($class, $options) = @_;
   my @command = ('elinks', '-dump', '-force-html');
 
-  #   if ($option->{'ansi_colour'}) {
+  #   if ($options->{'ansi_colour'}) {
   #     push @command, '-eval', 'set document.dump.color_mode=1';
   #   }
 
-  if (defined $option->{'_width'}) {
+  if (defined $options->{'_width'}) {
     push @command,
-      '-dump-width', $option->{'_width'},
+      '-dump-width', $options->{'_width'},
         '-eval', 'set document.browse.margin_width=0';
   }
 
-  if (my $input_charset = $option->{'input_charset'}) {
+  if (my $input_charset = $options->{'input_charset'}) {
     $input_charset = _elinks_mung_charset ($input_charset);
     push @command,
       '-eval', ('set document.codepage.assume='
@@ -63,16 +64,17 @@ sub _crunch_command {
         '-eval', 'set document.codepage.force_assumed=1';
 
   }
-  if (my $output_charset = $option->{'output_charset'}) {
+  if (my $output_charset = $options->{'output_charset'}) {
     push @command, '-dump-charset', _elinks_mung_charset ($output_charset);
   }
 
   # 'elinks_options' not documented ...
-  return (@command, @{$option->{'elinks_options'} || []});
+  return (@command, @{$options->{'elinks_options'} || []});
 }
 
-# elinks (version 0.12pre2 at least) is picky about charset names similar to
-# the main links.  Turn "latin-1" into "latin1" for convenience.
+# elinks (version 0.12pre2 at least) is picky about charset names in a
+# similar fashion to the main "links" program (see Links.pm).  Turn
+# "latin-1" into "latin1" here for convenience.
 #
 sub _elinks_mung_charset {
   my ($charset) = @_;
@@ -80,6 +82,8 @@ sub _elinks_mung_charset {
   return $charset;
 }
 
+# return $str with quotes around it, and backslashed within it, suitable for
+# use in an elinks config file, or -eval of a config file line
 sub _quote_config_stringarg {
   my ($str) = @_;
   $str =~ s/'/\\'/g;
@@ -118,7 +122,7 @@ The module interface is compatible with formatters like C<HTML::FormatText>,
 but all parsing etc is done by elinks.
 
 See C<HTML::FormatExternal> for the formatting functions and options, all of
-which are supported by C<HTML::FormatText::Elinks>, with the following
+which are supported by C<HTML::FormatText::Elinks> with the following
 caveats.
 
 =over 4
@@ -145,7 +149,7 @@ L<http://www.geocities.com/user42_kevin/html-formatexternal/index.html>
 
 =head1 LICENSE
 
-Copyright 2008 Kevin Ryde
+Copyright 2008, 2009 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the

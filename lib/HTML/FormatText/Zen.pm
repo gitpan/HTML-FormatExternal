@@ -1,4 +1,4 @@
-# Copyright 2008 Kevin Ryde
+# Copyright 2008, 2009 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -14,15 +14,16 @@
 # with HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
 
 package HTML::FormatText::Zen;
+use 5.006;
 use strict;
 use warnings;
-use Carp;
-use base 'HTML::FormatExternal';
+use HTML::FormatExternal;
+our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 13;
+our $VERSION = 14;
 
-use constant { DEFAULT_LEFTMARGIN => 3,
-               DEFAULT_RIGHTMARGIN => 77 };
+use constant DEFAULT_LEFTMARGIN => 3;
+use constant DEFAULT_RIGHTMARGIN => 77;
 
 sub program_full_version {
   my ($self_or_class) = @_;
@@ -40,22 +41,22 @@ sub program_version {
 }
 
 sub _crunch_command {
-  my ($class, $option) = @_;
+  my ($class, $options) = @_;
 
   # is it worth enforcing/checking this ?
   #
-  #   if (my $input_charset = $option->{'input_charset'}) {
-  #     $input_charset =~ /^latin-?1$|^iso-8859-1$/i
+  #   if (my $input_charset = $options->{'input_charset'}) {
+  #     $input_charset =~ /^latin-?1$|^iso-?8859-1$/i
   #       or croak "Zen only accepts latin-1 input";
   #   }
-  #   if (my $output_charset = $option->{'output_charset'}) {
-  #     $output_charset =~ /^latin-?1$|^iso-8859-1$/i
+  #   if (my $output_charset = $options->{'output_charset'}) {
+  #     $output_charset =~ /^latin-?1$|^iso-?8859-1$/i
   #       or croak "Zen only produces latin-1 output";
   #   }
 
   # 'zen_options' not documented ...
   return ('zen', '-i', 'dump',
-          @{$option->{'zen_options'} || []});
+          @{$options->{'zen_options'} || []});
 }
 
 1;
@@ -103,7 +104,7 @@ L<http://www.geocities.com/user42_kevin/html-formatexternal/index.html>
 
 =head1 LICENSE
 
-Copyright 2008 Kevin Ryde
+Copyright 2008, 2009 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the

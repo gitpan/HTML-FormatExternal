@@ -1,4 +1,4 @@
-# Copyright 2008 Kevin Ryde
+# Copyright 2008, 2009 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -14,15 +14,16 @@
 # with HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
 
 package HTML::FormatExternal;
+# Perl6::Slurp demands 5.8 anyway, don't think need to ask for 5.8 here to
+# be sure of getting multi-arg open() of piped command in that module
+# use 5.008;
+use 5.006;
 use strict;
 use warnings;
 use Carp;
 
-# Perl6::Slurp demands 5.8 anyway, don't think need to ask for 5.8 here to
-# be sure of getting multi-arg open() of piped command in that module
-# use 5.008;
 
-our $VERSION = 13;
+our $VERSION = 14;
 
 # set this to 1 for some diagnostic prints, set to 2 to preserve tempfiles
 # (also possible with the usual File::Temp settings)
@@ -43,13 +44,18 @@ sub format {
 # the input string is wide then it's passed to and from the program in the
 # specified input_charset and output_charset, but then decoded back to a
 # wide string at the end.  The charsets default to utf-8 input, and to
-# _WIDE_CHARSET for output.  Links.pm overrides _WIDE_CHARSET since it can
-# only emit latin1 (it seems).
+# _WIDE_CHARSET for output.  Links.pm and Html2text.pm override this default
+# _WIDE_CHARSET according to what output they're able to produce.
 # 
 use constant _WIDE_CHARSET => 'UTF-8';
 
+# format_string() takes the easy approach of putting the string in a temp
+# file and letting format_file() do the real work.  The formatter programs
+# can generally read stdin and write stdout, so could do that with select()
+# to simultaneously write and read back.
+#
 sub format_string {
-  my ($class, $html_str, %option) = @_;
+  my ($class, $html_str, %options) = @_;
 
   require File::Temp;
   my $fh = File::Temp->new;
@@ -59,23 +65,24 @@ sub format_string {
   }
 
   if (utf8::is_utf8 ($html_str)) {
-    if (! exists $option{'input_charset'}) {
-      $option{'input_charset'} = 'UTF-8';
+    if (! exists $options{'input_charset'}) {
+      $options{'input_charset'} = 'UTF-8';
     }
-    if (! exists $option{'output_charset'}) {
-      $option{'output_charset'} = $class->_WIDE_CHARSET;
+    if (! exists $options{'output_charset'}) {
+      $options{'output_charset'} = $class->_WIDE_CHARSET;
     }
-    my $charset = $option{'input_charset'};
+    my $charset = $options{'input_charset'};
     my $layer = ":encoding($charset)";
     binmode ($fh, $layer) or croak "Cannot set coding $layer";
   }
-  print $fh $html_str;
-  $fh->autoflush(1);
 
-  my $str = $class->format_file ($fh->filename, %option);
+  $fh->autoflush(1);
+  print $fh $html_str or croak "Cannot write temp file";
+
+  my $str = $class->format_file ($fh->filename, %options);
 
   if (utf8::is_utf8 ($html_str)) {
-    $str = Encode::decode ($option{'output_charset'}, $str);
+    $str = Encode::decode ($options{'output_charset'}, $str);
   }
   return $str;
 }
@@ -88,7 +95,7 @@ sub format_string {
 #   * netrik doesn't seem to have one at all
 #
 sub format_file {
-  my ($class, $filename, %option) = @_;
+  my ($class, $filename, %options) = @_;
 
   # If neither leftmargin nor rightmargin are specified then '_width' is
   # unset and the _crunch_command() funcs leave it to the program defaults.
@@ -101,16 +108,16 @@ sub format_file {
   # when just one of the two is set.  Not great hard coding those values,
   # but the programs don't have anything good to set one but not the other.
   #
-  my $leftmargin  = $option{'leftmargin'};
-  my $rightmargin = $option{'rightmargin'};
+  my $leftmargin  = $options{'leftmargin'};
+  my $rightmargin = $options{'rightmargin'};
   if (defined $leftmargin || defined $rightmargin) {
     if (! defined $leftmargin)  { $leftmargin  = $class->DEFAULT_LEFTMARGIN; }
     if (! defined $rightmargin) { $rightmargin = $class->DEFAULT_RIGHTMARGIN; }
-    $option{'_width'} = $rightmargin - $leftmargin;
+    $options{'_width'} = $rightmargin - $leftmargin;
   }
 
-  my @command = ('-|', $class->_crunch_command(\%option), $filename);
-  my $env = $option{'ENV'} || {};
+  my @command = ('-|', $class->_crunch_command(\%options), $filename);
+  my $env = $options{'ENV'} || {};
   if (DEBUG) {
     require Data::Dumper;
     print Data::Dumper->new([\@command],['command'])->Dump;
@@ -142,7 +149,7 @@ sub _run_version {
     eval { Perl6::Slurp::slurp ('-|', @command) }
   };
 
-  # strip blank lines at end of lynx
+  # strip blank lines at end of lynx, maybe others
   if (defined $version) { $version =~ s/\n{2,}$/\n/s; }
   return $version;
 }
@@ -169,9 +176,10 @@ This is a collection of the following formatter modules turning HTML into
 plain text by dumping it through the respective external programs.
 
     HTML::FormatText::Elinks
+    HTML::FormatText::Html2text
     HTML::FormatText::Links
-    HTML::FormatText::Netrik
     HTML::FormatText::Lynx
+    HTML::FormatText::Netrik
     HTML::FormatText::W3m
     HTML::FormatText::Zen
 
@@ -180,8 +188,8 @@ C<HTML::FormatText>, but the programs do all the work.
 
 Common formatting options are used where possible, like C<leftmargin> and
 C<rightmargin>, so just by switching the class you can use a different
-program (or plain C<HTML::FormatText>) according to personal preference, or
-strengths and weaknesses, or what you've got.
+program (or the plain C<HTML::FormatText>) according to personal preference,
+or strengths and weaknesses, or what you've got.
 
 There's nothing particularly difficult about piping through these programs,
 but a unified interface hides details like how to set margins and how to
@@ -249,37 +257,37 @@ the return is C<undef>.
 C<program_version> is the number alone.  C<program_full_version> is the
 entire output, which may include build options, copyright notice, etc.
 
-    # eg. "2.8.7dev.10"
     $str = HTML::FormatText::Lynx->program_version();
+    # eg. "2.8.7dev.10"
 
-    # eg. "w3m version w3m/0.5.2, options lang=en,m17n,image,..."
     $str = HTML::FormatText::W3m->program_full_version();
+    # eg. "w3m version w3m/0.5.2, options lang=en,m17n,image,..."
 
-(The version number of the Perl module itself is available with for instance
-C<< HTML::FormatText::Netrik->VERSION >> or C<< $formatter->VERSION >> in
-the usual way, see L<UNIVERSAL>.)
+The version number of the Perl module itself is available with the usual
+C<< HTML::FormatText::Netrik->VERSION >> or C<< $formatter->VERSION >>, see
+L<UNIVERSAL>.
 
 =back
 
 =head1 CHARSETS
 
-A file passed to the formatters is interpreted as the HTML default latin-1,
-or as the charset specified in a C<< <meta> >> within the HTML, or as forced
+A file passed to the formatters is interpreted in the charset of a
+C<< <meta> >> within the HTML, or latin-1 per the HTML specs, or as forced
 by the C<input_charset> option below.
 
-A string should be bytes like a file, not Perl wide chars.  (There's some
-secret experimental encode/decode for wide chars, but better let
-C<HTML::Formatter> take the lead on how that might work.)
+A string input should be bytes the same as a file, not Perl wide chars.
+(There's some secret experimental encode/decode for wide chars, but better
+let C<HTML::Formatter> take the lead on how that might work.)
 
 The result string is bytes similarly, encoded in whatever the respective
-programs produce.  This is usually the locale charset but you can force it
-with the C<output_charset> option to be sure.
+programs produce.  This may be the locale charset; you can force it with the
+C<output_charset> option to be sure.
 
 =head1 OPTIONS
 
 The following options can be given.  The defaults are whatever the
 respective programs do.  The programs generally read their config files when
-dumping, so those defaults and formatting details might follow your personal
+dumping, so the defaults and formatting details may follow your personal
 settings (usually a good thing).
 
 =over 4
@@ -311,19 +319,29 @@ defaults vary, but usually follow the locale.
 
 =head1 FUTURE
 
+There's nothing done with errors or warning messages from the formatters.
+Generally they make a best effort on doubtful HTML, but fatal errors like
+bad options or missing libraries will probably be trapped in the future.
+
 C<elinks> (from Aug 2008) and C<netrik> can produce ANSI escapes for
-colours, underline, etc, which might be good for text destined for a tty or
-further crunching.  Perhaps an C<ansi> option could enable that, where
-possible, but for now it's turned off in those programs to keep the default
+colours, underline, etc, and C<html2text> can produce TTY style backspacing.
+This might be good for text destined for a tty or further crunching.
+Perhaps an C<ansi> or C<tty> option could enable this, where possible, but
+for now it's deliberately turned off in those programs to keep the default
 straightforward.
 
 =head1 SEE ALSO
 
-L<HTML::FormatText::Elinks>, L<HTML::FormatText::Links>,
-L<HTML::FormatText::Netrik>, L<HTML::FormatText::Lynx>,
-L<HTML::FormatText::W3m>, L<HTML::FormatText::Zen>,
+L<HTML::FormatText::Elinks>,
+L<HTML::FormatText::Html2text>,
+L<HTML::FormatText::Links>,
+L<HTML::FormatText::Netrik>,
+L<HTML::FormatText::Lynx>,
+L<HTML::FormatText::W3m>,
+L<HTML::FormatText::Zen>,
 
-L<HTML::FormatText>, L<HTML::FormatText::WithLinks>,
+L<HTML::FormatText>,
+L<HTML::FormatText::WithLinks>,
 L<HTML::FormatText::WithLinks::AndTables>
 
 =head1 HOME PAGE
@@ -332,7 +350,7 @@ L<http://www.geocities.com/user42_kevin/html-formatexternal/index.html>
 
 =head1 LICENSE
 
-Copyright 2008 Kevin Ryde
+Copyright 2008, 2009 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the
