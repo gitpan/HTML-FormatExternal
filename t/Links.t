@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright 2008, 2009 Kevin Ryde
+# Copyright 2008, 2009, 2010 Kevin Ryde
 
 # This file is part of HTML-FormatExternal.
 #
@@ -19,14 +19,44 @@
 
 use strict;
 use warnings;
-use HTML::FormatText::Links;
-use Test::More tests => 2;
+use Test::More tests => 10;
+
+BEGIN { SKIP: { eval 'use Test::NoWarnings; 1'
+                  or skip 'Test::NoWarnings not available', 1; } }
+
+require HTML::FormatText::Links;
+{
+  my $want_version = 15;
+  is ($HTML::FormatText::Links::VERSION, $want_version,
+      'VERSION variable');
+  is (HTML::FormatText::Links->VERSION,  $want_version,
+      'VERSION class method');
+  ok (eval { HTML::FormatText::Links->VERSION($want_version); 1 },
+      "VERSION class check $want_version");
+  my $check_version = $want_version + 1000;
+  ok (! eval { HTML::FormatText::Links->VERSION($check_version); 1 },
+      "VERSION class check $check_version");
+
+  my $formatter = HTML::FormatText::Links->new;
+  is ($formatter->VERSION, $want_version, 'VERSION object method');
+  ok (eval { $formatter->VERSION($want_version); 1 },
+      "VERSION object check $want_version");
+  ok (! eval { $formatter->VERSION($check_version); 1 },
+      "VERSION object check $check_version");
+}
 
 ## no critic (ProtectPrivateSubs)
 
-is (HTML::FormatText::Links::_links_mung_charset ('latin-1'),
-    "latin1");
-is (HTML::FormatText::Links::_links_mung_charset ('LATIN-2'),
-    "LATIN2");
+#-----------------------------------------------------------------------------
+# _links_mung_charset()
+
+foreach my $data (['latin-1', 'latin1'],
+                  ['LATIN-2', 'LATIN2'],
+                 ) {
+  my ($str, $want) = @$data;
+  is (HTML::FormatText::Links::_links_mung_charset($str),
+      $want,
+      "_links_mung_charset() '$str'");
+}
 
 exit 0;

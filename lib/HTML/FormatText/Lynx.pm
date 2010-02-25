@@ -20,7 +20,7 @@ use warnings;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 14;
+our $VERSION = 15;
 
 use constant DEFAULT_LEFTMARGIN => 2;
 use constant DEFAULT_RIGHTMARGIN => 72;
@@ -92,6 +92,8 @@ __END__
 
 HTML::FormatText::Lynx - format HTML as plain text using lynx
 
+=for test_synopsis my ($text, $filename, $html_string, $formatter, $tree)
+
 =head1 SYNOPSIS
 
  use HTML::FormatText::Lynx;
@@ -108,7 +110,7 @@ C<HTML::FormatText::Lynx> turns HTML into plain text using the C<lynx> program.
 
 =over 4
 
-L<http://lynx.isc.org/>
+http://lynx.isc.org/
 
 =back
 
@@ -150,7 +152,7 @@ L<HTML::FormatExternal>
 
 =head1 HOME PAGE
 
-L<http://www.geocities.com/user42_kevin/html-formatexternal/index.html>
+http://user42.tuxfamily.org/html-formatexternal/index.html
 
 =head1 LICENSE
 
@@ -167,6 +169,6 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 more details.
 
 You should have received a copy of the GNU General Public License along with
-HTML-FormatExternal.  If not, see L<http://www.gnu.org/licenses/>.
+HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut

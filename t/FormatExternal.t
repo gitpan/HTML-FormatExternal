@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright 2008, 2009 Kevin Ryde
+# Copyright 2008, 2009, 2010 Kevin Ryde
 
 # This file is part of HTML-FormatExternal.
 #
@@ -17,19 +17,28 @@
 # You can get a copy of the GNU General Public License online at
 # http://www.gnu.org/licenses.
 
+use 5.006;
 use strict;
 use warnings;
 use HTML::FormatExternal;
-use Test::More tests => 2 + 7*11;
+use Test::More tests => 5 + 7*11;
 
-my $want_version = 14;
-ok ($HTML::FormatExternal::VERSION >= $want_version,
-    'VERSION variable');
-ok (HTML::FormatExternal->VERSION  >= $want_version,
-    'VERSION class method');
-HTML::FormatExternal->VERSION ($want_version);
+BEGIN { SKIP: { eval 'use Test::NoWarnings; 1'
+                  or skip 'Test::NoWarnings not available', 1; } }
 
-## no critic (ProtectPrivateSubs)
+
+{
+  my $want_version = 15;
+  is ($HTML::FormatExternal::VERSION, $want_version,
+      'VERSION variable');
+  is (HTML::FormatExternal->VERSION,  $want_version,
+      'VERSION class method');
+  ok (eval { HTML::FormatExternal->VERSION($want_version); 1 },
+      "VERSION class check $want_version");
+  my $check_version = $want_version + 1000;
+  ok (! eval { HTML::FormatExternal->VERSION($check_version); 1 },
+      "VERSION class check $check_version");
+}
 
 
 # Cribs:
@@ -75,7 +84,7 @@ foreach my $class (qw(HTML::FormatText::Elinks
       "$class VERSION variable");
 
   #
-  # program_full_version
+  # program_full_version()
   #
   { my $version = $class->program_full_version;
     require Data::Dumper;
@@ -90,10 +99,7 @@ foreach my $class (qw(HTML::FormatText::Elinks
   }
 
   #
-  # program_version
-  #
-  # Netrik is an empty string as it doesn't seem to print its version,
-  # others have to be non-empty
+  # program_version()
   #
   { my $version = $class->program_version();
     require Data::Dumper;

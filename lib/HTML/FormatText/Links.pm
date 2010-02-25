@@ -1,4 +1,4 @@
-# Copyright 2008, 2009 Kevin Ryde
+# Copyright 2008, 2009, 2010 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -20,7 +20,7 @@ use warnings;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 14;
+our $VERSION = 15;
 
 use constant DEFAULT_LEFTMARGIN => 3;
 use constant DEFAULT_RIGHTMARGIN => 77;
@@ -102,6 +102,8 @@ __END__
 
 HTML::FormatText::Links - format HTML as plain text using links
 
+=for test_synopsis my ($text, $filename, $html_string, $formatter, $tree)
+
 =head1 SYNOPSIS
 
  use HTML::FormatText::Links;
@@ -119,7 +121,7 @@ program.
 
 =over 4
 
-L<http://links.twibright.com/>
+http://links.twibright.com/
 
 =back
 
@@ -137,14 +139,15 @@ an extra 3 spaces within the requested left and right margins.
 
 =item C<input_charset>, C<output_charset>
 
-Although UTF-8 input can be given, the output cannot be UTF-8.  Various
-unicode characters are turned into nice output though, for example smiley
+An output charset requires Links 2.0 or higher (or some such version), and
+as of 2.2 the output cannot be UTF-8 (though the input can be).  Various
+unicode inputs are turned into reasonable output though, for example smiley
 face U+263A becomes ":-)".
 
 =back
 
-Links can be a little picky about its charset names.  This module attempts
-to ease that by for instance turning "latin-1" (not accepted) into "latin1"
+Links can be a bit picky about its charset names.  This module attempts to
+ease that by for instance turning "latin-1" (not accepted) into "latin1"
 (which is accepted).  A full "ISO-8859-1" etc is accepted too.
 
 =head1 SEE ALSO
@@ -153,11 +156,11 @@ L<HTML::FormatExternal>
 
 =head1 HOME PAGE
 
-L<http://www.geocities.com/user42_kevin/html-formatexternal/index.html>
+http://user42.tuxfamily.org/html-formatexternal/index.html
 
 =head1 LICENSE
 
-Copyright 2008, 2009 Kevin Ryde
+Copyright 2008, 2009, 2010 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the
@@ -170,6 +173,6 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 more details.
 
 You should have received a copy of the GNU General Public License along with
-HTML-FormatExternal.  If not, see L<http://www.gnu.org/licenses/>.
+HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut

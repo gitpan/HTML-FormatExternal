@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright 2008 Kevin Ryde
+# Copyright 2008, 2009, 2010 Kevin Ryde
 
 # This file is part of HTML-FormatExternal.
 #
@@ -22,7 +22,10 @@ use warnings;
 use 5.008;
 use Encode;
 use HTML::FormatExternal;
-use Test::More tests => 23;
+use Test::More tests => 24;
+
+BEGIN { SKIP: { eval 'use Test::NoWarnings; 1'
+                  or skip 'Test::NoWarnings not available', 1; } }
 
 use HTML::FormatText::Elinks;
 use HTML::FormatText::Links;

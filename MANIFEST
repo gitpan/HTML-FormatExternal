@@ -6,9 +6,12 @@ debian/control
 debian/copyright
 debian/rules
 debian/watch
+devel/margin12.html
 devel/run.pl
 devel/x.html
 examples/demo.pl
+inc/my_pod2html
+inc/MyMakeMakerExtras.pm
 lib/HTML/FormatExternal.pm
 lib/HTML/FormatText/Elinks.pm
 lib/HTML/FormatText/Html2text.pm
@@ -22,9 +25,13 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 README
 SIGNATURE
+t/0-META-read.t
+t/0-Test-DistManifest.t
+t/0-Test-Pod.t
+t/0-Test-Synopsis.t
+t/0-Test-YAML-Meta.t
 t/devel/More.t
 t/Elinks.t
 t/FormatExternal.t
 t/Links.t
-t/pod.t
 META.yml                                 Module meta-data (added by MakeMaker)

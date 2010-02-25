@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright 2008, 2009 Kevin Ryde
+# Copyright 2008, 2009, 2010 Kevin Ryde
 
 # This file is part of HTML-FormatExternal.
 #
@@ -19,16 +19,46 @@
 
 use strict;
 use warnings;
-use HTML::FormatText::Elinks;
-use Test::More tests => 3;
+use Test::More tests => 11;
+
+BEGIN { SKIP: { eval 'use Test::NoWarnings; 1'
+                  or skip 'Test::NoWarnings not available', 1; } }
+
+require HTML::FormatText::Elinks;
+{
+  my $want_version = 15;
+  is ($HTML::FormatText::Elinks::VERSION, $want_version,
+      'VERSION variable');
+  is (HTML::FormatText::Elinks->VERSION,  $want_version,
+      'VERSION class method');
+
+  ok (eval { HTML::FormatText::Elinks->VERSION($want_version); 1 },
+      "VERSION class check $want_version");
+  my $check_version = $want_version + 1000;
+  ok (! eval { HTML::FormatText::Elinks->VERSION($check_version); 1 },
+      "VERSION class check $check_version");
+
+  my $formatter = HTML::FormatText::Elinks->new;
+  is ($formatter->VERSION, $want_version, 'VERSION object method');
+  ok (eval { $formatter->VERSION($want_version); 1 },
+      "VERSION object check $want_version");
+  ok (! eval { $formatter->VERSION($check_version); 1 },
+      "VERSION object check $check_version");
+}
 
 ## no critic (ProtectPrivateSubs)
 
-is (HTML::FormatText::Elinks::_quote_config_stringarg(''),
-    "''");
-is (HTML::FormatText::Elinks::_quote_config_stringarg('abc'),
-    "'abc'");
-is (HTML::FormatText::Elinks::_quote_config_stringarg("x'y'z"),
-    "'x\\'y\\'z'");
+#-----------------------------------------------------------------------------
+# _quote_config_stringarg()
+
+foreach my $data (['', "''"],
+                  ['abc', "'abc'"],
+                  ["x'y'z", "'x\\'y\\'z'"],
+                 ) {
+  my ($str, $want) = @$data;
+  is (HTML::FormatText::Elinks::_quote_config_stringarg($str),
+      $want,
+      "_quote_config_stringarg() '$str'");
+}
 
 exit 0;

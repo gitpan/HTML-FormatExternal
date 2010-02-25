@@ -20,7 +20,7 @@ use warnings;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 14;
+our $VERSION = 15;
 
 use constant DEFAULT_LEFTMARGIN => 0;
 use constant DEFAULT_RIGHTMARGIN => 79;
@@ -86,6 +86,8 @@ __END__
 
 HTML::FormatText::Html2text - format HTML as plain text using html2text
 
+=for test_synopsis my ($text, $filename, $html_string, $formatter, $tree)
+
 =head1 SYNOPSIS
 
  use HTML::FormatText::Html2text;
@@ -103,7 +105,7 @@ C<html2text> program.
 
 =over 4
 
-L<http://www.mbayer.de/html2text/>
+http://www.mbayer.de/html2text/
 
 =back
 
@@ -134,7 +136,7 @@ L<HTML::FormatExternal>
 
 =head1 HOME PAGE
 
-L<http://www.geocities.com/user42_kevin/html-formatexternal/index.html>
+http://user42.tuxfamily.org/html-formatexternal/index.html
 
 =head1 LICENSE
 
@@ -151,6 +153,6 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 more details.
 
 You should have received a copy of the GNU General Public License along with
-HTML-FormatExternal.  If not, see L<http://www.gnu.org/licenses/>.
+HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut

@@ -23,7 +23,7 @@ use warnings;
 use Carp;
 
 
-our $VERSION = 14;
+our $VERSION = 15;
 
 # set this to 1 for some diagnostic prints, set to 2 to preserve tempfiles
 # (also possible with the usual File::Temp settings)
@@ -58,7 +58,8 @@ sub format_string {
   my ($class, $html_str, %options) = @_;
 
   require File::Temp;
-  my $fh = File::Temp->new;
+  my $fh = File::Temp->new (TEMPLATE => 'HTML-FormatExternal-XXXXXX',
+                            TMPDIR => 1);
   if (DEBUG) {
     print "FormatExternal temp file ",$fh->filename,"\n";
     if (DEBUG >= 2) { $fh->unlink_on_destroy(0); }
@@ -140,27 +141,28 @@ sub format_file {
 
 sub _run_version {
   my ($self_or_class, @command) = @_;
-  require Perl6::Slurp;
 
-  my $version = do {
-    # no warning suppression when debugging
-    local $SIG{__WARN__} = (DEBUG ? $SIG{__WARN__}
-                            : \&_warn_suppress_exec);
-    eval { Perl6::Slurp::slurp ('-|', @command) }
-  };
+  # undef if any exec/slurp problem
+  my $version = eval { _slurp_nowarn ('-|', @command) };
 
   # strip blank lines at end of lynx, maybe others
   if (defined $version) { $version =~ s/\n{2,}$/\n/s; }
   return $version;
 }
 
+
 # In Perl6::Slurp version 0.03 open() gives its usual warning if it can't
 # run the program, but Perl6::Slurp then croaks with that same message.
 # Suppress the warning in the interests of avoiding duplication.
 #
+sub _slurp_nowarn {
+  require Perl6::Slurp;
+  # no warning suppression when debugging
+  local $SIG{__WARN__} = (DEBUG ? $SIG{__WARN__} : \&_warn_suppress_exec);
+  return Perl6::Slurp::slurp (@_);
+}
 sub _warn_suppress_exec {
-  $_[0] =~ /Can't exec/
-    or warn $_[0];
+  $_[0] =~ /Can't exec/ or warn $_[0];
 }
 
 1;
@@ -346,7 +348,7 @@ L<HTML::FormatText::WithLinks::AndTables>
 
 =head1 HOME PAGE
 
-L<http://www.geocities.com/user42_kevin/html-formatexternal/index.html>
+http://user42.tuxfamily.org/html-formatexternal/index.html
 
 =head1 LICENSE
 
@@ -363,6 +365,6 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 more details.
 
 You should have received a copy of the GNU General Public License along with
-HTML-FormatExternal.  If not, see L<http://www.gnu.org/licenses/>.
+HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
 
 =cut

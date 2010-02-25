@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.55.
+signed via the Module::Signature module, version 0.61.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -14,39 +14,46 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 8624bcdae55baeef00cd11d5dfcfa60f68710a02 COPYING
-SHA1 b7af8395a51fb984f3b0db02fcda35ae4d4fa242 Changes
-SHA1 8e0b270841b5d9a29b94d4dabb8efc166160bd74 MANIFEST
-SHA1 783db1fbe253850577500d04896e14afded62a8a MANIFEST.SKIP
-SHA1 63edf70a1516e042ddda19ccf59ddf4139a73805 META.yml
-SHA1 fdb916f313c5617b9ff8771969e5eb0d15e5cd3f Makefile.PL
-SHA1 824a98e2eca4a078a004093f4e1fb873c58c697b README
-SHA1 47046d2666f2dc116279e2157c6ed7a0be421872 debian/changelog
-SHA1 1b6453892473a467d07372d45eb05abc2031647a debian/compat
-SHA1 0182dbafc505debb5a66f09752c76af47d7a2b29 debian/control
-SHA1 9ede8116f3cbec8846816d9b82b60911ef876b55 debian/copyright
+SHA1 842745cb706f8f2126506f544492f7a80dbe29b3 COPYING
+SHA1 002ad71201ecf402b0296a4f6c8235fd4ff3882d Changes
+SHA1 a24582297035d241fb309a730274ddf8d746b335 MANIFEST
+SHA1 a5702ed4c66c943b47354756b340812302d15e6f MANIFEST.SKIP
+SHA1 382ee8bb68e38ff6121cb2cfcd377daeeafdd21d META.yml
+SHA1 3fb74d90b45c2d07838cc9f2fecad3f8a9a76673 Makefile.PL
+SHA1 c0132c6a505f5f378bf3bca0606801120c09ba1b README
+SHA1 2fbbf67597c12df9501044108090346ee712ff04 debian/changelog
+SHA1 ac3478d69a3c81fa62e60f5c3696165a4e5e6ac4 debian/compat
+SHA1 79734a27468eb2244fc4937451d958bceac86088 debian/control
+SHA1 982c8cbf7207cb206a7d8380f3d47817d5f1d145 debian/copyright
 SHA1 7b20ede534e907b190590ebefea70040581c820f debian/rules
-SHA1 f59f53cb54a8678c5df52a6631b28942caaff0ab debian/watch
+SHA1 97b2a7bbf231ad7c6576c2120da6e217be4e98eb debian/watch
+SHA1 9eefd7e0439fb5187e4e32dae89e33b66ad31df6 devel/margin12.html
 SHA1 a9d0a82ceb83d24f070f0d5aded44daf02858fd3 devel/run.pl
 SHA1 5b15ceb150aaf96b1c1a95d26549891ffd913864 devel/x.html
 SHA1 e8fec5f197340b127b9b5b520c784dfadd3235f1 examples/demo.pl
-SHA1 18d29fb4c6a516c78c0e8769fae6e834e1741f13 lib/HTML/FormatExternal.pm
-SHA1 86df297e526d78737a3b72371d556e3e810873e2 lib/HTML/FormatText/Elinks.pm
-SHA1 83e1192609703fadfe7e0ebb7a1c3e5116186676 lib/HTML/FormatText/Html2text.pm
-SHA1 db2ac4d7eb2d057d15b88d173161f087db315aee lib/HTML/FormatText/Links.pm
-SHA1 c720c686b6189a20ba27fbe226f2dcc55c9965a7 lib/HTML/FormatText/Lynx.pm
-SHA1 ecf0126c8f435b3d450d2225da59c76fc67edb20 lib/HTML/FormatText/Netrik.pm
-SHA1 dc84e7469fc4a7ed07fd80f9c9b6dc3f2b04ae67 lib/HTML/FormatText/W3m.pm
-SHA1 27bf9b70cba965099aa043984db1e668077060c5 lib/HTML/FormatText/Zen.pm
-SHA1 57a3c6425fd6e4279f5ab4b5b2d426c41a44923a t/Elinks.t
-SHA1 5de8c42c28ba02376952c74b41f424db6505cf6e t/FormatExternal.t
-SHA1 404e3bd607d2072d41ac118dc263d3ba53d2b15b t/Links.t
-SHA1 db94e1e8983aa51cb9a023d3d727370b7da123ec t/devel/More.t
-SHA1 a661a39e55a4127aecb1b97a631c4f01f7dce8c6 t/pod.t
+SHA1 89dd306a01b5719586e53f05938f9b28ab94717e inc/MyMakeMakerExtras.pm
+SHA1 8e2847ef2d040879f7a2838735f676d287e32da7 inc/my_pod2html
+SHA1 480cd89face134f334975181983a131e895c2754 lib/HTML/FormatExternal.pm
+SHA1 9e1316c19742fea4298b16cd23767338bda23f1f lib/HTML/FormatText/Elinks.pm
+SHA1 08171fbf1ce0fbfa87f38ddb6e724c348bbc9933 lib/HTML/FormatText/Html2text.pm
+SHA1 50c190e1adab4cb62b2ca14e61de60d76ede9b7b lib/HTML/FormatText/Links.pm
+SHA1 8d3a4c414217574529c44bc8327b598abb6218ae lib/HTML/FormatText/Lynx.pm
+SHA1 8ea7e4cc72af77da3a402868e5a3190f01972036 lib/HTML/FormatText/Netrik.pm
+SHA1 00d821c388d705ef7a0d7dfbc5c5865b5044121a lib/HTML/FormatText/W3m.pm
+SHA1 0be007f669c8b961757797875478ba64bdd618b5 lib/HTML/FormatText/Zen.pm
+SHA1 11eda0347af48309996833a4da214197e31b85fb t/0-META-read.t
+SHA1 a343ed4dce96d05de51eed1ec065911584b96fce t/0-Test-DistManifest.t
+SHA1 bba0dc087cbe64d8f100ab77e6cef061c0bebf27 t/0-Test-Pod.t
+SHA1 5fa94e1e88e44064d1e6b21c88a4c9374a17bfd1 t/0-Test-Synopsis.t
+SHA1 39fb4f79da7687abc825c4ea646acb3ee9e3a342 t/0-Test-YAML-Meta.t
+SHA1 ff4de9655bb92a20eafc57d412392df573daff62 t/Elinks.t
+SHA1 61672b20c78b1a06b60c8cb99edcd7302aa5bb1f t/FormatExternal.t
+SHA1 ff8ba50d16408494f001bc8ab3af03a578d2beb9 t/Links.t
+SHA1 07febaee6c8ae1dafbd9545edcb9e33c6e8eec02 t/devel/More.t
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.9 (GNU/Linux)
+Version: GnuPG v1.4.10 (GNU/Linux)
 
-iD8DBQFJnfHiLFMCIV9q3ToRAgR6AKCh6n/HUu/nnTGuUc6jtoPxYBPO5gCeM3es
-v2H6N8yjgFisI2g3SwGkV8A=
-=tJ5S
+iD8DBQFLhvU7LFMCIV9q3ToRAiRMAJ9QS8bS87tFxysIZaNCFKmrWUnljACeI/Rh
+rFbJ/3BoVA88S62U9KsZUWQ=
+=l++x
 -----END PGP SIGNATURE-----
