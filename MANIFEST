@@ -6,9 +6,11 @@ debian/control
 debian/copyright
 debian/rules
 debian/watch
+devel/base-utf16.html
+devel/base.html
 devel/margin12.html
 devel/run.pl
-devel/x.html
+devel/utf.pl
 examples/demo.pl
 inc/my_pod2html
 inc/MyMakeMakerExtras.pm

@@ -26,7 +26,7 @@ BEGIN { SKIP: { eval 'use Test::NoWarnings; 1'
 
 require HTML::FormatText::Links;
 {
-  my $want_version = 15;
+  my $want_version = 16;
   is ($HTML::FormatText::Links::VERSION, $want_version,
       'VERSION variable');
   is (HTML::FormatText::Links->VERSION,  $want_version,

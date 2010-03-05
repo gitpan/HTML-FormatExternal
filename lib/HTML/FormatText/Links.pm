@@ -20,7 +20,7 @@ use warnings;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 15;
+our $VERSION = 16;
 
 use constant DEFAULT_LEFTMARGIN => 3;
 use constant DEFAULT_RIGHTMARGIN => 77;
@@ -97,6 +97,8 @@ sub _links_mung_charset {
 
 1;
 __END__
+
+=for stopwords formatters charset UTF unicode latin Ryde FormatExternal
 
 =head1 NAME
 

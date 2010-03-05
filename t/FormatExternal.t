@@ -21,14 +21,14 @@ use 5.006;
 use strict;
 use warnings;
 use HTML::FormatExternal;
-use Test::More tests => 5 + 7*11;
+use Test::More tests => 207;
 
-BEGIN { SKIP: { eval 'use Test::NoWarnings; 1'
-                  or skip 'Test::NoWarnings not available', 1; } }
+# BEGIN { SKIP: { eval 'use Test::NoWarnings; 1'
+#                   or skip 'Test::NoWarnings not available', 1; } }
 
 
 {
-  my $want_version = 15;
+  my $want_version = 16;
   is ($HTML::FormatExternal::VERSION, $want_version,
       'VERSION variable');
   is (HTML::FormatExternal->VERSION,  $want_version,
@@ -116,7 +116,7 @@ foreach my $class (qw(HTML::FormatText::Elinks
 
  SKIP: {
     if (! defined $class->program_full_version) {
-      skip "$class program not available", 5;
+      skip "$class program not available", 23;
     }
 
     { my $str = $class->format_string ('<html><body>Hello</body><html>');
@@ -170,13 +170,87 @@ foreach my $class (qw(HTML::FormatText::Elinks
       my $str = $class->format_string ($html,
                                        leftmargin => 0,
                                        rightmargin => 12);
-      { require Data::Dumper;
+      {
+        require Data::Dumper;
         my $dumper = Data::Dumper->new([$str],['output']);
         $dumper->Useqq (1);
         diag ($dumper->Dump);
       }
       like ($str, qr/(^|\n)123 567 9012($|[\r\n])/,
             "$class through class, with leftmargin 0 rightmargin 12");
+    }
+
+    foreach my $data
+      ([ 'ascii',
+         '',
+         '<html><body><a href="page.html">Foo</a></body></html>',
+         'http://foo.org/page.html' ],
+
+       [ 'utf16le',
+         "\377\376",
+         "<\0h\0t\0m\0l\0>\0<\0b\0o\0d\0y\0>\0<\0a\0 \0h\0r\0e\0f\0=\0\"\0p\0a\0g\0e\0.\0h\0t\0m\0l\0\"\0>\0F\0o\0o\0<\0/\0a\0>\0<\0/\0b\0o\0d\0y\0>\0<\0/\0h\0t\0m\0l\0>\0",
+         'http://foo.org/page.html' ],
+
+       [ 'utf16be',
+         "\376\377",
+         "\0<\0h\0t\0m\0l\0>\0<\0b\0o\0d\0y\0>\0<\0a\0 \0h\0r\0e\0f\0=\0\"\0p\0a\0g\0e\0.\0h\0t\0m\0l\0\"\0>\0F\0o\0o\0<\0/\0a\0>\0<\0/\0b\0o\0d\0y\0>\0<\0/\0h\0t\0m\0l\0>",
+         'http://foo.org/page.html' ],
+
+       ['utf32le',
+        "\377\376\0\0",
+        "<\0\0\0h\0\0\0t\0\0\0m\0\0\0l\0\0\0>\0\0\0<\0\0\0b\0\0\0o\0\0\0d\0\0\0y\0\0\0>\0\0\0<\0\0\0a\0\0\0 \0\0\0h\0\0\0r\0\0\0e\0\0\0f\0\0\0=\0\0\0\"\0\0\0p\0\0\0a\0\0\0g\0\0\0e\0\0\0.\0\0\0h\0\0\0t\0\0\0m\0\0\0l\0\0\0\"\0\0\0>\0\0\0F\0\0\0o\0\0\0o\0\0\0<\0\0\0/\0\0\0a\0\0\0>\0\0\0<\0\0\0/\0\0\0b\0\0\0o\0\0\0d\0\0\0y\0\0\0>\0\0\0<\0\0\0/\0\0\0h\0\0\0t\0\0\0m\0\0\0l\0\0\0>\0\0\0",
+        'http://foo.org/page.html' ],
+
+       [ 'utf32be',
+         "\0\0\376\377",
+         "\0\0\0<\0\0\0h\0\0\0t\0\0\0m\0\0\0l\0\0\0>\0\0\0<\0\0\0b\0\0\0o\0\0\0d\0\0\0y\0\0\0>\0\0\0<\0\0\0a\0\0\0 \0\0\0h\0\0\0r\0\0\0e\0\0\0f\0\0\0=\0\0\0\"\0\0\0p\0\0\0a\0\0\0g\0\0\0e\0\0\0.\0\0\0h\0\0\0t\0\0\0m\0\0\0l\0\0\0\"\0\0\0>\0\0\0F\0\0\0o\0\0\0o\0\0\0<\0\0\0/\0\0\0a\0\0\0>\0\0\0<\0\0\0/\0\0\0b\0\0\0o\0\0\0d\0\0\0y\0\0\0>\0\0\0<\0\0\0/\0\0\0h\0\0\0t\0\0\0m\0\0\0l\0\0\0>",
+         'http://foo.org/page.html' ],
+      ) {
+      my ($charset, $charset_bom, $html, $want_str) = @$data;
+      my $want_re = qr/\Q$want_str/;
+
+      foreach my $bom ('',
+                       ($charset_bom ? ($charset_bom) : ())) {
+      SKIP: {
+          # html2text -- doesn't show link targets
+          # links     -- doesn't show link targets
+          # w3m       -- doesn't show link targets
+          # zen       -- shows only the plain href part, doesn't expand
+          if ($class !~ /Elinks|Lynx/) {
+            skip "$class doesn't display absolutized links", 2;
+          }
+          if ($charset ne 'ascii' && $class =~ /Elinks/) {
+            skip "$class only takes 8-bit input (as of 0.12pre5)", 2;
+          }
+
+          $html = "$bom$html";
+          my @input_charset = ($bom ? (input_charset => $charset) : ());
+          my $desc = "$class base, $charset, ".($bom?'bom':'input_charset');
+          {
+            my $str = $class->format_string ($html,
+                                             base => 'http://foo.org',
+                                             output_charset => 'us-ascii',
+                                             @input_charset);
+            # require Data::Dumper;
+            # diag "$charset ", Data::Dumper->new([\$str],['str'])->Dump;
+
+            like ($str, $want_re, "format_string() $desc");
+          }
+          {
+            require File::Temp;
+            my $fh = File::Temp->new (SUFFIX => '.html');
+            $fh->autoflush(1);
+            binmode($fh) or die 'Cannot set binmode on temp file for test';
+            print $fh $html or die 'Cannot write temp file for test';
+            my $filename = $fh->filename;
+            my $str = $class->format_file ($filename,
+                                           base => 'http://foo.org',
+                                           output_charset => 'us-ascii',
+                                           @input_charset);
+            like ($str, $want_re, "format_string() $desc");
+          }
+        }
+      }
     }
   }
 }

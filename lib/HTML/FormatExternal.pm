@@ -1,4 +1,4 @@
-# Copyright 2008, 2009 Kevin Ryde
+# Copyright 2008, 2009, 2010 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -23,7 +23,7 @@ use warnings;
 use Carp;
 
 
-our $VERSION = 15;
+our $VERSION = 16;
 
 # set this to 1 for some diagnostic prints, set to 2 to preserve tempfiles
 # (also possible with the usual File::Temp settings)
@@ -57,32 +57,34 @@ use constant _WIDE_CHARSET => 'UTF-8';
 sub format_string {
   my ($class, $html_str, %options) = @_;
 
-  require File::Temp;
-  my $fh = File::Temp->new (TEMPLATE => 'HTML-FormatExternal-XXXXXX',
-                            TMPDIR => 1);
-  if (DEBUG) {
-    print "FormatExternal temp file ",$fh->filename,"\n";
-    if (DEBUG >= 2) { $fh->unlink_on_destroy(0); }
-  }
+  my $fh = _tempfile();
 
-  if (utf8::is_utf8 ($html_str)) {
-    if (! exists $options{'input_charset'}) {
-      $options{'input_charset'} = 'UTF-8';
+  my $wide = 0; # utf8::is_utf8($html_str);
+  if ($wide) {
+    if (defined $options{'input_charset'}) {
+      my $layer = ":encoding($options{'input_charset'})";
+      binmode ($fh, $layer) or croak "Cannot add layer $layer";
+    } else {
+      # entitize the input instead of input_charset=UTF-8, to help the
+      # programs that don't take actual utf8 input
+      $html_str = _entitize($html_str);
     }
     if (! exists $options{'output_charset'}) {
       $options{'output_charset'} = $class->_WIDE_CHARSET;
     }
-    my $charset = $options{'input_charset'};
-    my $layer = ":encoding($charset)";
-    binmode ($fh, $layer) or croak "Cannot set coding $layer";
+  }
+
+  if (defined (my $base_prefix = _base_prefix(\%options, undef, \$html_str))) {
+    delete $options{'base'};
+    $html_str = $base_prefix . $html_str;
   }
 
   $fh->autoflush(1);
-  print $fh $html_str or croak "Cannot write temp file";
+  print $fh $html_str or croak 'Cannot write temp file';
 
   my $str = $class->format_file ($fh->filename, %options);
 
-  if (utf8::is_utf8 ($html_str)) {
+  if ($wide) {
     $str = Encode::decode ($options{'output_charset'}, $str);
   }
   return $str;
@@ -117,18 +119,29 @@ sub format_file {
     $options{'_width'} = $rightmargin - $leftmargin;
   }
 
-  my @command = ('-|', $class->_crunch_command(\%options), $filename);
+  my @command = ('-|', $class->_crunch_command(\%options));
   my $env = $options{'ENV'} || {};
+
+  my $tempfh;
+  if (defined (my $base_prefix = _base_prefix(\%options, $filename, undef))) {
+    $tempfh = _tempfile();
+    print $tempfh $base_prefix or croak 'Cannot write temp file';
+    require File::Copy;
+    File::Copy::copy ($filename, $tempfh) or croak 'Cannot write temp file';
+    $filename = $tempfh->filename;
+  }
+  push @command, $filename;
+
   if (DEBUG) {
     require Data::Dumper;
     print Data::Dumper->new([\@command],['command'])->Dump;
-    if (%$env) { print Data::Dumper->new($env,['env'])->Dump; }
+    if (%$env) { print Data::Dumper->new([$env],['env'])->Dump; }
   }
 
   require Perl6::Slurp;
   my $str = do {
     local %ENV = %ENV;
-    @ENV{keys %$env} = values %$env; # overrides
+    @ENV{keys %$env} = values %$env; # overrides out of subclasses
     Perl6::Slurp::slurp (@command);
   };
 
@@ -150,6 +163,62 @@ sub _run_version {
   return $version;
 }
 
+sub _tempfile {
+  require File::Temp;
+  my $fh = File::Temp->new (TEMPLATE => 'HTML-FormatExternal-XXXXXX',
+                            SUFFIX => '.html',
+                            TMPDIR => 1);
+  binmode($fh) or die 'Oops, cannot set binmode()';
+  if (DEBUG) {
+    print "FormatExternal temp file ",$fh->filename,"\n";
+    if (DEBUG >= 2) { $fh->unlink_on_destroy(0); }
+  }
+  $fh->autoflush(1);
+  return $fh;
+}
+
+sub _base_prefix {
+  my ($options, $filename, $htmlref) = @_;
+  defined (my $base = $options->{'base'}) || return;
+  if (DEBUG) { print "base $base\n"; }
+
+  
+  $base = "$base";           # stringize possible URI object
+  $base = _entitize($base);  # probably shouldn't be any non-ascii in a url
+  $base = "<base href=\"$base\">\n";
+
+  my $charset = $options->{'input_charset'};
+  if (! defined $charset) {
+    if (! defined $htmlref) {
+      my $initial;
+      open my $fh, '<', $filename or croak "Cannot open $filename: $!";
+      defined (read $fh, $initial, 4) or croak "Cannot read $filename: $!";
+      $htmlref = \$initial;
+    }
+    if ($$htmlref =~ "\000\000\376\377") {
+      $charset = 'utf-32be';
+    } elsif ($$htmlref =~ "\377\376\000\000") {
+      $charset = 'utf-32le';
+    } elsif ($$htmlref =~ "\376\377") {
+      $charset = 'utf-16be';
+    } elsif ($$htmlref =~ "\377\376") {
+      $charset = 'utf-16le';
+    }
+  }
+  if (defined $charset) {
+    require Encode;
+    # encode() errors out if unknown charset, in which case leave $base as
+    # ascii, which may or may not be right, but at least stands a chance
+    eval { $base = Encode::encode ($charset, $base); };
+  }
+  return $base;
+}
+
+sub _entitize {
+  my ($str) = @_;
+  $str =~ s{([^[:ascii:]])}{'&#'.ord($1).';'}e;
+  return $str;
+}
 
 # In Perl6::Slurp version 0.03 open() gives its usual warning if it can't
 # run the program, but Perl6::Slurp then croaks with that same message.
@@ -167,6 +236,8 @@ sub _warn_suppress_exec {
 
 1;
 __END__
+
+=for stopwords formatter formatters charset charsets TreeBuilder ie latin-1 config Elinks absolutized tty Ryde FormatExternal
 
 =head1 NAME
 
@@ -274,12 +345,13 @@ L<UNIVERSAL>.
 =head1 CHARSETS
 
 A file passed to the formatters is interpreted in the charset of a
-C<< <meta> >> within the HTML, or latin-1 per the HTML specs, or as forced
-by the C<input_charset> option below.
+C<< <meta> >> within the HTML, or default latin-1 per the HTML specs, or as
+forced by the C<input_charset> option below.
 
 A string input should be bytes the same as a file, not Perl wide chars.
-(There's some secret experimental encode/decode for wide chars, but better
-let C<HTML::Formatter> take the lead on how that might work.)
+(There's some secret experimental encode/decode for wide chars, as yet
+unused, better let C<HTML::Formatter> take the lead on how that might be
+activated.)
 
 The result string is bytes similarly, encoded in whatever the respective
 programs produce.  This may be the locale charset; you can force it with the
@@ -317,6 +389,16 @@ including ignoring any C<< <meta> >> within the HTML.
 Force the text output to be encoded as of the given charset.  The program
 defaults vary, but usually follow the locale.
 
+=item C<< base => STRING >>
+
+Set the base URL for any relative links within the HTML (similar to
+C<HTML::FormatText::WithLinks>).  Usually this should be the location the
+HTML was downloaded from.
+
+If the document contains its own C<< <base> >> setting then currently the
+document takes precedence.  Only Lynx and Elinks display absolutized link
+targets, this option has no effect on the other programs.
+
 =back
 
 =head1 FUTURE
@@ -352,7 +434,7 @@ http://user42.tuxfamily.org/html-formatexternal/index.html
 
 =head1 LICENSE
 
-Copyright 2008, 2009 Kevin Ryde
+Copyright 2008, 2009, 2010 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the

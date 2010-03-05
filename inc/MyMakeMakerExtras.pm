@@ -288,6 +288,7 @@ check-copyright-years:
 	      | debian/patches/*.diff \
 	      | COPYING | MANIFEST* | SIGNATURE | META.yml \
 	      | version.texi | */version.texi \
+	      | *utf16* \
 	      | *.mo | *.locatedb | t/samp.*) \
 	      continue ;; \
 	    esac; \
@@ -307,7 +308,7 @@ check-debug-constants:
 	if egrep -n 'DEBUG => [1-9]' $(EXE_FILES) $(TO_INST_PM); then exit 1; else exit 0; fi
 
 check-spelling:
-	if egrep -nHi 'existant|explict|agument|destionation|\bthe the\b|\bnote sure\b' -r . \
+	if egrep -nHi 'continous|existant|explict|agument|destionation|\bthe the\b|\bnote sure\b' -r . \
 	  | egrep -v '(MyMakeMakerExtras|Makefile|dist-deb).*grep -nH'; \
 	then false; else true; fi
 

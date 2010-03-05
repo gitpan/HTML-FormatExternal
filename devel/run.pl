@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright 2008, 2009 Kevin Ryde
+# Copyright 2008, 2009, 2010 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -19,50 +19,61 @@ use strict;
 use warnings;
 use Module::Load;
 use Data::Dumper;
+$Data::Dumper::Useqq = 1;
 use FindBin qw($Bin);
 
 my $class;
-#$class = 'HTML::FormatText::Elinks';
 $class = 'HTML::FormatText::WithLinks';
 $class = 'HTML::FormatText::WithLinks::AndTables';
 $class = 'HTML::FormatText::W3m';
 $class = 'HTML::FormatText';
-$class = 'HTML::FormatText::Lynx';
 $class = 'HTML::FormatText::Netrik';
 $class = 'HTML::FormatText::Links';
 $class = 'HTML::FormatText::Html2text';
+$class = 'HTML::FormatText::Elinks';
+$class = 'HTML::FormatText::Lynx';
 Module::Load::load ($class);
 
+#  <base href="file:///tmp/">
 
 
 {
-  my $filename = "$Bin/x.html";
+  # my $filename = "$FindBin::Bin/x.html";
   # $filename = "/tmp/z.html";
+  my $filename = "$FindBin::Bin/base.html";
+
+  # output_charset => 'ascii',
+  # output_charset => 'ANSI_X3.4-1968',
+  # output_charset => 'utf-8'
+  my $output_charset = 'utf-8';
+
+  # input_charset => 'ascii',
+  # input_charset => 'shift-jis',
+  # input_charset => 'iso-8859-1',
+  # input_charset => 'utf-8',
+  my $input_charset = 'utf16le';
+
   my $str = $class->format_file
     ($filename,
      rightmargin => 60,
      # leftmargin => 20,
      justify => 1,
 
-     # input_charset => 'ascii',
-     # input_charset => 'shift-jis',
-     # input_charset => 'iso-8859-1',
-     # input_charset => 'utf-8',
-     output_charset => 'iso-8859-1',
-     # output_charset => 'ascii',
-     # output_charset => 'ANSI_X3.4-1968',
-     # output_charset => 'utf-8'
-     lynx_options => [ '-underscore',
-#                        '-underline_links',
-                       '-with_backspaces',
-                     ],
+     base => "http://foo.org/\x{2022}/foo.html",
+
+     input_charset  => $input_charset,
+     output_charset => $output_charset,
+
+     #      lynx_options => [ '-underscore',
+     #                        '-underline_links',
+     #                        '-with_backspaces',
+     #                      ],
      justify => 1,
     );
-  $Data::Dumper::Useqq = 1;
   $Data::Dumper::Purity = 1;
-  print "$class\n";
+  print "$class on $filename\n";
   print $str;
-  print Dumper($str);
+  print Data::Dumper->new([\$str],['output'])->Useqq(1)->Dump;
   print "utf8 flag ",(utf8::is_utf8($str) ? 'yes' : 'no'), "\n";
   exit 0;
 }

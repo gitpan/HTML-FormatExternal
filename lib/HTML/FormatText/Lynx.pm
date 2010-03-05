@@ -1,4 +1,4 @@
-# Copyright 2008, 2009 Kevin Ryde
+# Copyright 2008, 2009, 2010 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -20,7 +20,7 @@ use warnings;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 15;
+our $VERSION = 16;
 
 use constant DEFAULT_LEFTMARGIN => 2;
 use constant DEFAULT_RIGHTMARGIN => 72;
@@ -87,6 +87,8 @@ sub _crunch_command {
 
 1;
 __END__
+
+=for stopwords formatters latin iso boolean Ryde FormatExternal
 
 =head1 NAME
 
@@ -156,7 +158,7 @@ http://user42.tuxfamily.org/html-formatexternal/index.html
 
 =head1 LICENSE
 
-Copyright 2008, 2009 Kevin Ryde
+Copyright 2008, 2009, 2010 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the

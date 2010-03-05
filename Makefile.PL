@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright 2008, 2009 Kevin Ryde
+# Copyright 2008, 2009, 2010 Kevin Ryde
 
 # This file is part of HTML-FormatExternal.
 #
@@ -61,6 +61,7 @@ MyMakeMakerExtras::WriteMakefile
              maximum_devel
              => { description => 'Stuff used variously for development.',
                   requires => { 'Module::Load' => 0,
+                                'I18N::Langinfo' => 0,
                               },
                 },
            },
