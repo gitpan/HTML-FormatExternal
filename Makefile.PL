@@ -31,13 +31,16 @@ MyMakeMakerExtras::WriteMakefile
    MIN_PERL_VERSION => '5.006',
    PREREQ_PM    => {
                     # actually Perl6::Slurp depends on perl 5.8 which has
-                    # File::Temp and Test::More builtin, and we probably
-                    # want 5.8 for the slurp to use a multi-arg pipe open(),
-                    # so probably don't need to list these explicitly
-                    #
+                    # Test::More builtin, and we probably want 5.8 for the
+                    # slurp to use a multi-arg pipe open(), so probably
+                    # don't need to list these explicitly
                     'Encode'     => 0,
-                    'File::Temp' => 0,
                     'Test::More' => 0,
+
+                    # for overloaded eq() which File::Copy calls :-(
+                    # only actually needed for the "base" option with input
+                    # from a file
+                    'File::Temp' => 0.18,
 
                     'Perl6::Slurp' => 0,
                    },

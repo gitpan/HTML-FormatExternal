@@ -41,17 +41,23 @@ Module::Load::load ($class);
   # my $filename = "$FindBin::Bin/x.html";
   # $filename = "/tmp/z.html";
   my $filename = "$FindBin::Bin/base.html";
+  # my $filename = "/tmp/rsquo.html";
+
 
   # output_charset => 'ascii',
   # output_charset => 'ANSI_X3.4-1968',
   # output_charset => 'utf-8'
   my $output_charset = 'utf-8';
 
-  # input_charset => 'ascii',
   # input_charset => 'shift-jis',
   # input_charset => 'iso-8859-1',
   # input_charset => 'utf-8',
-  my $input_charset = 'utf16le';
+  my $input_charset;
+  $input_charset = 'utf16le';
+  $input_charset = 'ascii';
+
+  require File::Copy;
+  print "File::Copy ",File::Copy->VERSION, "\n";
 
   my $str = $class->format_file
     ($filename,
@@ -73,7 +79,7 @@ Module::Load::load ($class);
   $Data::Dumper::Purity = 1;
   print "$class on $filename\n";
   print $str;
-  print Data::Dumper->new([\$str],['output'])->Useqq(1)->Dump;
+  print Data::Dumper->new([\$str],['output'])->Useqq(0)->Dump;
   print "utf8 flag ",(utf8::is_utf8($str) ? 'yes' : 'no'), "\n";
   exit 0;
 }

@@ -28,7 +28,7 @@ use Test::More tests => 207;
 
 
 {
-  my $want_version = 16;
+  my $want_version = 17;
   is ($HTML::FormatExternal::VERSION, $want_version,
       'VERSION variable');
   is (HTML::FormatExternal->VERSION,  $want_version,

@@ -15,47 +15,47 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA1
 
 SHA1 842745cb706f8f2126506f544492f7a80dbe29b3 COPYING
-SHA1 37ea6b67207983c6f73a390fb69f489b1412bc7e Changes
+SHA1 c9de9f1c62a4a9717b731ce3bec940841b76b112 Changes
 SHA1 ff0da681c018547e4a6bc57b5bda179a9825f19a MANIFEST
 SHA1 a5702ed4c66c943b47354756b340812302d15e6f MANIFEST.SKIP
-SHA1 8c1e57b6fb6e67ea16fe92238e60f34e9a38d361 META.yml
-SHA1 60abe179b3fc6c49fee9987f2f4fe342d8068491 Makefile.PL
+SHA1 9627d8221010248ff80d5daa4fd8c68b4b36720c META.yml
+SHA1 3f85557a0c0c6802ed63e74fb6eda7ce37f9b7f3 Makefile.PL
 SHA1 c0132c6a505f5f378bf3bca0606801120c09ba1b README
-SHA1 0e66eba460f06baa921f1aae9bba9ebfdf0ce47b debian/changelog
+SHA1 05660cbd6daff1165c7c1253f8746fc1108c289d debian/changelog
 SHA1 ac3478d69a3c81fa62e60f5c3696165a4e5e6ac4 debian/compat
-SHA1 79734a27468eb2244fc4937451d958bceac86088 debian/control
+SHA1 d9b9eedc60036f5df03f19b88a2e4be58be48c21 debian/control
 SHA1 982c8cbf7207cb206a7d8380f3d47817d5f1d145 debian/copyright
 SHA1 7b20ede534e907b190590ebefea70040581c820f debian/rules
 SHA1 97b2a7bbf231ad7c6576c2120da6e217be4e98eb debian/watch
 SHA1 40aaa9775e1dc755939e88641412d535ae66c7ac devel/base-utf16.html
 SHA1 c65b23ab6e4fb8a7f3b98f7394cce6d803bc025f devel/base.html
 SHA1 9eefd7e0439fb5187e4e32dae89e33b66ad31df6 devel/margin12.html
-SHA1 0eb131458251b7bce6e7663cbd0ce153657e2fc8 devel/run.pl
+SHA1 46f7d118095e7169a7d16a26d3d2e726af09e3df devel/run.pl
 SHA1 7d4e35709d6066070a44d823b2ee69e33c4370e4 devel/utf.pl
 SHA1 e8fec5f197340b127b9b5b520c784dfadd3235f1 examples/demo.pl
 SHA1 01d4cc4ab437cf78c53084d7f1b1f3ff0b768a2a inc/MyMakeMakerExtras.pm
 SHA1 63427b66eb26f013f10c835b0cf320c93361f310 inc/my_pod2html
-SHA1 06462e82d6fccc52a1a9bd3ed117f2699c07bcda lib/HTML/FormatExternal.pm
-SHA1 06e451dce0b3779784e10605600b509e5d4f14ef lib/HTML/FormatText/Elinks.pm
-SHA1 d5e85bba8ed8a41a2bdd085b5eae1f94ca6202cb lib/HTML/FormatText/Html2text.pm
-SHA1 02a4009fb452a294f4efcf0c64d5a97afa706c77 lib/HTML/FormatText/Links.pm
-SHA1 2d96ca5641d9741bd8f0b15e12ba9b89d94d7884 lib/HTML/FormatText/Lynx.pm
-SHA1 a03952712f8c9deecc4c9f96282db393fd97a084 lib/HTML/FormatText/Netrik.pm
-SHA1 36c5844b1e9f7a8ec5f78dea559985363e62dc25 lib/HTML/FormatText/W3m.pm
-SHA1 21c23d8c679a7248edd70106c8602d1147432c43 lib/HTML/FormatText/Zen.pm
+SHA1 a10a307a839ce44671d444ab7af1966000373872 lib/HTML/FormatExternal.pm
+SHA1 85e9da5a3d4ff3319259bd2f99e1f3c0391a0c6c lib/HTML/FormatText/Elinks.pm
+SHA1 03d47374be35b1fe61d90d7097379c0d009d7522 lib/HTML/FormatText/Html2text.pm
+SHA1 16a512beb95ac294b43d37ca19034985c96bc0d5 lib/HTML/FormatText/Links.pm
+SHA1 1b78ca7550ad4385e376e555e26bc4f10beb528f lib/HTML/FormatText/Lynx.pm
+SHA1 a8fc673c4fff4fd65cd50e9e4bb02b01cb58909c lib/HTML/FormatText/Netrik.pm
+SHA1 47fbe5bf59b9f427688d3269c0cb08efc0a618a1 lib/HTML/FormatText/W3m.pm
+SHA1 8e62ebfeca37c8855724ff61df1d0da8a976f1dc lib/HTML/FormatText/Zen.pm
 SHA1 11eda0347af48309996833a4da214197e31b85fb t/0-META-read.t
 SHA1 a343ed4dce96d05de51eed1ec065911584b96fce t/0-Test-DistManifest.t
 SHA1 bba0dc087cbe64d8f100ab77e6cef061c0bebf27 t/0-Test-Pod.t
 SHA1 5fa94e1e88e44064d1e6b21c88a4c9374a17bfd1 t/0-Test-Synopsis.t
 SHA1 9a19fa262c1cc6ee6afe638600ce880500a91946 t/0-Test-YAML-Meta.t
-SHA1 de61fe2fe2110e03fd69d2fb48ddc581f63e0fea t/Elinks.t
-SHA1 c20a6c43e56723f6db6e361e21f1386f6b7f931f t/FormatExternal.t
-SHA1 8740a4aaeadec0839a3f40af8105c540246fb492 t/Links.t
+SHA1 ed992c21739221b95212ef4978540d6980480ce8 t/Elinks.t
+SHA1 b37d7e86ac2ca80e3030f0b252937785e65d2a08 t/FormatExternal.t
+SHA1 0a98e4d158333cf28bfd77d0bfaa526e270cf99a t/Links.t
 SHA1 07febaee6c8ae1dafbd9545edcb9e33c6e8eec02 t/devel/More.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 
-iD8DBQFLkEK4LFMCIV9q3ToRAjSOAJwMYMlprjs+eiSxmzvBHOZVdh1RxgCfWwDH
-aXgvks3u0kwq92wx0U2PvYU=
-=M344
+iD8DBQFLlW+VLFMCIV9q3ToRAirTAJ9VTUGHxKIzBGJKtzW+ycR7ojSGkQCfcYuK
+3vCNwIj2hbJjCl6zL6VcCtY=
+=N3tG
 -----END PGP SIGNATURE-----

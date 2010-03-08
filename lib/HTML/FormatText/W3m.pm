@@ -20,7 +20,7 @@ use warnings;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 16;
+our $VERSION = 17;
 
 use constant DEFAULT_LEFTMARGIN => 0;
 use constant DEFAULT_RIGHTMARGIN => 80;

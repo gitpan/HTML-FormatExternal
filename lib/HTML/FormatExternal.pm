@@ -23,7 +23,7 @@ use warnings;
 use Carp;
 
 
-our $VERSION = 16;
+our $VERSION = 17;
 
 # set this to 1 for some diagnostic prints, set to 2 to preserve tempfiles
 # (also possible with the usual File::Temp settings)
@@ -63,15 +63,18 @@ sub format_string {
   if ($wide) {
     if (defined $options{'input_charset'}) {
       my $layer = ":encoding($options{'input_charset'})";
-      binmode ($fh, $layer) or croak "Cannot add layer $layer";
+      binmode ($fh, $layer) or die "Cannot add layer $layer";
     } else {
       # entitize the input instead of input_charset=UTF-8, to help the
       # programs that don't take actual utf8 input
       $html_str = _entitize($html_str);
     }
-    if (! exists $options{'output_charset'}) {
-      $options{'output_charset'} = $class->_WIDE_CHARSET;
-    }
+  }
+
+  my $output_wide;
+  if (($options{'output_charset'}||'') eq 'wide') {
+    $output_wide = 1;
+    $options{'output_charset'} = $class->_WIDE_CHARSET;
   }
 
   if (defined (my $base_prefix = _base_prefix(\%options, undef, \$html_str))) {
@@ -80,11 +83,11 @@ sub format_string {
   }
 
   $fh->autoflush(1);
-  print $fh $html_str or croak 'Cannot write temp file';
+  print $fh $html_str or die 'Cannot write temp file';
 
   my $str = $class->format_file ($fh->filename, %options);
 
-  if ($wide) {
+  if ($output_wide) {
     $str = Encode::decode ($options{'output_charset'}, $str);
   }
   return $str;
@@ -124,10 +127,19 @@ sub format_file {
 
   my $tempfh;
   if (defined (my $base_prefix = _base_prefix(\%options, $filename, undef))) {
+    # File::Copy rudely calls eq() to compare $from and $to.  Need either
+    # File::Temp 0.18 to have that on $tempfh, or File::Copy 2.Something for
+    # it to check an overload method exists first.  Newer File::Temp is
+    # available from cpan, where File::Copy may not be, so ask for the
+    # former.
+    File::Temp->VERSION(0.18);
+
     $tempfh = _tempfile();
-    print $tempfh $base_prefix or croak 'Cannot write temp file';
+    print $tempfh $base_prefix or die 'Cannot write temp file';
+
     require File::Copy;
-    File::Copy::copy ($filename, $tempfh) or croak 'Cannot write temp file';
+    File::Copy::copy($filename, $tempfh)
+        or die "Cannot copy $filename to temp: $!";
     $filename = $tempfh->filename;
   }
   push @command, $filename;
@@ -192,7 +204,7 @@ sub _base_prefix {
     if (! defined $htmlref) {
       my $initial;
       open my $fh, '<', $filename or croak "Cannot open $filename: $!";
-      defined (read $fh, $initial, 4) or croak "Cannot read $filename: $!";
+      defined (read $fh, $initial, 4) or die "Cannot read $filename: $!";
       $htmlref = \$initial;
     }
     if ($$htmlref =~ "\000\000\376\377") {

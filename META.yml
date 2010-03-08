@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               HTML-FormatExternal
-version:            16
+version:            17
 abstract:           HTML to text formatting using external programs.
 author:
     - Kevin Ryde <user42@zip.com.au>
@@ -12,7 +12,7 @@ build_requires:
     ExtUtils::MakeMaker:  0
 requires:
     Encode:        0
-    File::Temp:    0
+    File::Temp:    0.18
     perl:          5.006
     Perl6::Slurp:  0
     Test::More:    0
