@@ -20,7 +20,7 @@ use warnings;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 17;
+our $VERSION = 18;
 
 use constant DEFAULT_LEFTMARGIN => 2;
 use constant DEFAULT_RIGHTMARGIN => 72;
@@ -35,7 +35,7 @@ use constant DEFAULT_RIGHTMARGIN => 72;
     my ($class) = @_;
     $help_done ||= do {
       my $help = $class->_run_version ('lynx', '-help');
-      $have_nomargins = ($help =~ /-nomargins/);
+      $have_nomargins = (defined $help && $help =~ /-nomargins/);
       1;
     };
     return $have_nomargins;

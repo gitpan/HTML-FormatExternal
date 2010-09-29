@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 # Copyright 2008, 2009, 2010 Kevin Ryde
 
@@ -14,21 +14,21 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# You can get a copy of the GNU General Public License online at
-# http://www.gnu.org/licenses.
+# You should have received a copy of the GNU General Public License along
+# with HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
 
 use 5.006;
 use strict;
 use warnings;
 use HTML::FormatExternal;
-use Test::More tests => 207;
+use Test::More tests => 214;
 
-# BEGIN { SKIP: { eval 'use Test::NoWarnings; 1'
-#                   or skip 'Test::NoWarnings not available', 1; } }
-
+use lib 't';
+use MyTestHelpers;
+BEGIN { MyTestHelpers::nowarnings() }
 
 {
-  my $want_version = 17;
+  my $want_version = 18;
   is ($HTML::FormatExternal::VERSION, $want_version,
       'VERSION variable');
   is (HTML::FormatExternal->VERSION,  $want_version,
@@ -73,8 +73,7 @@ foreach my $class (qw(HTML::FormatText::Elinks
                       HTML::FormatText::W3m
                       HTML::FormatText::Zen)) {
   diag $class;
-  eval "require $class"
-    or die $@;
+  use_ok ($class);
 
   is ($class->VERSION,
       $HTML::FormatExternal::VERSION,
@@ -111,6 +110,12 @@ foreach my $class (qw(HTML::FormatText::Elinks
     my $version = $formatter->program_version();
     ok (is_undef_or_one_line_string($version),
         "$class program_version() from obj");
+  }
+
+  foreach my $method (qw(_have_nomargins _have_html_margin _have_ascii)) {
+    if ($class->can($method)) {
+      diag "$class $method() ",($class->$method ? "yes" : "no");
+    }
   }
 
 

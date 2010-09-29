@@ -20,7 +20,7 @@ use warnings;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 17;
+our $VERSION = 18;
 
 use constant DEFAULT_LEFTMARGIN => 0;
 use constant DEFAULT_RIGHTMARGIN => 79;
@@ -36,7 +36,7 @@ use constant _WIDE_CHARSET => 'iso-8859-1';
     my ($class) = @_;
     $help_done ||= do {
       my $help = $class->_run_version ('html2text', '-help');
-      $have_ascii = ($help =~ /-ascii/);
+      $have_ascii = (defined $help && $help =~ /-ascii/);
       1;
     };
     return $have_ascii;

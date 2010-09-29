@@ -17,6 +17,9 @@ along with HTML-FormatExternal.  If not, see http://www.gnu.org/licenses/
 
 
 
+Version 18, September 2010
+    - test manifest only as an author test
+
 Version 17, March 2010
     - newer File::Temp to avoid mutual misfeatures between it and File::Copy
 

@@ -20,7 +20,7 @@ use warnings;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 17;
+our $VERSION = 18;
 
 use constant DEFAULT_LEFTMARGIN => 3;
 use constant DEFAULT_RIGHTMARGIN => 77;
@@ -38,7 +38,7 @@ use constant _WIDE_CHARSET => 'iso-8859-1';
     $help_done ||= do {
       my ($class) = @_;
       my $help = $class->_run_version ('links', '-help');
-      $have_html_margin = ($help =~ /-html-margin/);
+      $have_html_margin = (defined $help && $help =~ /-html-margin/);
       1;
     };
     return $have_html_margin;

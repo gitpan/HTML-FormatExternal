@@ -14,18 +14,19 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# You can get a copy of the GNU General Public License online at
-# http://www.gnu.org/licenses.
+# You should have received a copy of the GNU General Public License along
+# with HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
 
 use strict;
 use warnings;
 use 5.008;
 use Encode;
 use HTML::FormatExternal;
-use Test::More tests => 24;
+use Test::More tests => 23;
 
-BEGIN { SKIP: { eval 'use Test::NoWarnings; 1'
-                  or skip 'Test::NoWarnings not available', 1; } }
+use lib 't';
+use MyTestHelpers;
+BEGIN { MyTestHelpers::nowarnings() }
 
 use HTML::FormatText::Elinks;
 use HTML::FormatText::Links;

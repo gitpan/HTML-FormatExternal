@@ -1,6 +1,6 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
-# Copyright 2008 Kevin Ryde
+# Copyright 2008, 2010 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
