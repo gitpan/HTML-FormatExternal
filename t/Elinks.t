@@ -27,7 +27,7 @@ BEGIN { MyTestHelpers::nowarnings() }
 
 require HTML::FormatText::Elinks;
 {
-  my $want_version = 18;
+  my $want_version = 19;
   is ($HTML::FormatText::Elinks::VERSION, $want_version,
       'VERSION variable');
   is (HTML::FormatText::Elinks->VERSION,  $want_version,

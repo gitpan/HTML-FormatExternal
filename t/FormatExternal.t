@@ -28,7 +28,7 @@ use MyTestHelpers;
 BEGIN { MyTestHelpers::nowarnings() }
 
 {
-  my $want_version = 18;
+  my $want_version = 19;
   is ($HTML::FormatExternal::VERSION, $want_version,
       'VERSION variable');
   is (HTML::FormatExternal->VERSION,  $want_version,

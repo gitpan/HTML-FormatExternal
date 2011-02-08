@@ -171,3 +171,13 @@ HERE
 }
 
 
+
+#           if ($class !~ /Lynx/) {
+#             # old lynx, eg. 2.8.1, doesn't have -display_charset for output_charset
+#             my $help = $class->_run_version ('lynx', '-help');
+#             my $have_display_charset = (defined $help
+#                                         && $help =~ /-display_charset/);
+#             if ($charset ne 'ascii' && ! $have_display_charset) {
+#               skip "this lynx doesn't have -display_charset", 2;
+#             }
+#           }

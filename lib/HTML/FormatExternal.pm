@@ -23,7 +23,7 @@ use warnings;
 use Carp;
 
 
-our $VERSION = 18;
+our $VERSION = 19;
 
 # set this to 1 for some diagnostic prints, set to 2 to preserve tempfiles
 # (also possible with the usual File::Temp settings)

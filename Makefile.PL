@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright 2008, 2009, 2010 Kevin Ryde
+# Copyright 2008, 2009, 2010, 2011 Kevin Ryde
 
 # This file is part of HTML-FormatExternal.
 #
@@ -49,23 +49,22 @@ MyMakeMakerExtras::WriteMakefile
    LICENSE      => 'gpl',
    SIGN         => 1,
 
-   META_MERGE
-   => { resources
-        => { homepage
-             => 'http://user42.tuxfamily.org/html-formatexternal/index.html',
-           },
-        optional_features
-        => { maximum_tests
-             => { description => 'Have "make test" do as much as possible.',
-                  requires => { 'HTML::TreeBuilder' => 0,
-                              },
-                },
-             maximum_devel
-             => { description => 'Stuff used variously for development.',
-                  requires => { 'Module::Load' => 0,
-                                'I18N::Langinfo' => 0,
-                              },
-                },
-           },
-      },
+   META_MERGE =>
+   { resources =>
+     { homepage => 'http://user42.tuxfamily.org/html-formatexternal/index.html',
+     },
+     optional_features =>
+     { maximum_tests =>
+       { description => 'Have "make test" do as much as possible.',
+         requires => { 'HTML::TreeBuilder' => 0,
+                     },
+       },
+       maximum_devel =>
+       { description => 'Stuff used variously for development.',
+         requires => { 'Module::Load' => 0,
+                       'I18N::Langinfo' => 0,
+                     },
+       },
+     },
+   },
   );

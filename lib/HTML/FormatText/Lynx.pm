@@ -20,7 +20,7 @@ use warnings;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 18;
+our $VERSION = 19;
 
 use constant DEFAULT_LEFTMARGIN => 2;
 use constant DEFAULT_RIGHTMARGIN => 72;
@@ -133,6 +133,11 @@ right positions.
 =item C<input_charset>, C<output_charset>
 
 Note that "latin-1" etc is not accepted, it must be "iso-8859-1" etc.
+
+C<output_charset> becomes the C<-display_charset> option and can't be used
+on very old C<lynx> which doesn't have that option (eg. lynx circa 2.8.1).
+Perhaps in the future C<output_charset> could be dropped if it's already
+what will be output, or throw a Perl error when unsupported.
 
 =back
 
