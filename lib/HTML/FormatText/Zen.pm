@@ -1,4 +1,4 @@
-# Copyright 2008, 2009, 2010 Kevin Ryde
+# Copyright 2008, 2009, 2010, 2013 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -20,14 +20,14 @@ use warnings;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 19;
+our $VERSION = 20;
 
-use constant DEFAULT_LEFTMARGIN => 3;
-use constant DEFAULT_RIGHTMARGIN => 77;
+use constant DEFAULT_LEFTMARGIN => 0;
+use constant DEFAULT_RIGHTMARGIN => 80;
 
 sub program_full_version {
   my ($self_or_class) = @_;
-  return $self_or_class->_run_version ('zen', '--version');
+  return $self_or_class->_run_version (['zen', '--version']);
 }
 sub program_version {
   my ($self_or_class) = @_;
@@ -40,10 +40,11 @@ sub program_version {
   return $1;
 }
 
-sub _crunch_command {
-  my ($class, $options) = @_;
+sub _make_run {
+  my ($class, $input_filename, $options) = @_;
 
-  # is it worth enforcing/checking this ?
+  # Is it worth enforcing/checking this ?
+  # Could use Encode.pm to convert the output without too much trouble.
   #
   #   if (my $input_charset = $options->{'input_charset'}) {
   #     $input_charset =~ /^latin-?1$|^iso-?8859-1$/i
@@ -55,14 +56,17 @@ sub _crunch_command {
   #   }
 
   # 'zen_options' not documented ...
-  return ('zen', '-i', 'dump',
-          @{$options->{'zen_options'} || []});
+  return ([ 'zen', '-i', 'dump',
+            @{$options->{'zen_options'} || []},
+            '--',  # end of options
+            $input_filename,
+          ]);
 }
 
 1;
 __END__
 
-=for stopwords formatters charset latin Ryde FormatExternal
+=for stopwords HTML-FormatExternal formatters charset latin-1 Ryde
 
 =head1 NAME
 
@@ -100,7 +104,7 @@ output is latin-1, and dump width is 80 columns with no left margin.
 
 =head1 SEE ALSO
 
-L<HTML::FormatExternal>
+L<HTML::FormatExternal>, L<zen(1)>
 
 =head1 HOME PAGE
 
@@ -108,7 +112,7 @@ http://user42.tuxfamily.org/html-formatexternal/index.html
 
 =head1 LICENSE
 
-Copyright 2008, 2009, 2010 Kevin Ryde
+Copyright 2008, 2009, 2010, 2013 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the

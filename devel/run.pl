@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Copyright 2008, 2009, 2010 Kevin Ryde
+# Copyright 2008, 2009, 2010, 2013 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -22,16 +22,20 @@ use Data::Dumper;
 $Data::Dumper::Useqq = 1;
 use FindBin qw($Bin);
 
+# uncomment this to run the ### lines
+use Smart::Comments;
+
 my $class;
 $class = 'HTML::FormatText::WithLinks';
 $class = 'HTML::FormatText::WithLinks::AndTables';
-$class = 'HTML::FormatText::W3m';
 $class = 'HTML::FormatText';
 $class = 'HTML::FormatText::Netrik';
-$class = 'HTML::FormatText::Links';
-$class = 'HTML::FormatText::Html2text';
 $class = 'HTML::FormatText::Elinks';
+$class = 'HTML::FormatText::Html2text';
 $class = 'HTML::FormatText::Lynx';
+$class = 'HTML::FormatText::Links';
+$class = 'HTML::FormatText::W3m';
+$class = 'HTML::FormatText::Vilistextum';
 Module::Load::load ($class);
 
 #  <base href="file:///tmp/">
@@ -40,7 +44,9 @@ Module::Load::load ($class);
 {
   # my $filename = "$FindBin::Bin/x.html";
   # $filename = "/tmp/z.html";
-  my $filename = "$FindBin::Bin/base.html";
+  # my $filename = "$FindBin::Bin/base.html";
+  # my $filename = "$FindBin::Bin/margin12.html";
+  my $filename = "t/%57";
   # my $filename = "/tmp/rsquo.html";
 
 
@@ -55,32 +61,50 @@ Module::Load::load ($class);
   my $input_charset;
   $input_charset = 'utf16le';
   $input_charset = 'ascii';
+  $input_charset = 'latin-1';
 
   require File::Copy;
   print "File::Copy ",File::Copy->VERSION, "\n";
 
   my $str = $class->format_file
     ($filename,
-     rightmargin => 60,
-     # leftmargin => 20,
-     justify => 1,
-
-     base => "http://foo.org/\x{2022}/foo.html",
-
+     # rightmargin => 12,
+     # # leftmargin => 20,
+     # justify => 1,
+     #
+     # base => "http://foo.org/\x{2022}/foo.html",
+     #
      input_charset  => $input_charset,
      output_charset => $output_charset,
 
-     #      lynx_options => [ '-underscore',
-     #                        '-underline_links',
-     #                        '-with_backspaces',
-     #                      ],
-     justify => 1,
+     # #      lynx_options => [ '-underscore',
+     # #                        '-underline_links',
+     # #                        '-with_backspaces',
+     # #                      ],
+     # justify => 1,
     );
   $Data::Dumper::Purity = 1;
   print "$class on $filename\n";
   print $str;
   print Data::Dumper->new([\$str],['output'])->Useqq(0)->Dump;
   print "utf8 flag ",(utf8::is_utf8($str) ? 'yes' : 'no'), "\n";
+  exit 0;
+}
+{
+  foreach my $class ('HTML::FormatText::Netrik',
+                     'HTML::FormatText::Links',
+                     'HTML::FormatText::Html2text',
+                     'HTML::FormatText::Lynx',
+                     'HTML::FormatText::Elinks',
+                     'HTML::FormatText::W3m',
+                     'HTML::FormatText::Vilistextum',
+                    ) {
+    Module::Load::load ($class);
+    my $version = $class->program_version;
+    my $full = $class->program_full_version;
+    ### $full
+    ### $version
+  }
   exit 0;
 }
 
@@ -105,11 +129,6 @@ Module::Load::load ($class);
   exit 0;
 }
 
-{
-  print $class->program_full_version,"\n";
-  print $class->program_version,"\n";
-  exit 0;
-}
 
 {
   require HTML::FormatText::Lynx;

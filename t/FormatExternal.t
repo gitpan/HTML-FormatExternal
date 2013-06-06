@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Copyright 2008, 2009, 2010 Kevin Ryde
+# Copyright 2008, 2009, 2010, 2013 Kevin Ryde
 
 # This file is part of HTML-FormatExternal.
 #
@@ -21,14 +21,14 @@ use 5.006;
 use strict;
 use warnings;
 use HTML::FormatExternal;
-use Test::More tests => 214;
+use Test::More tests => 270;
 
 use lib 't';
 use MyTestHelpers;
 BEGIN { MyTestHelpers::nowarnings() }
 
 {
-  my $want_version = 19;
+  my $want_version = 20;
   is ($HTML::FormatExternal::VERSION, $want_version,
       'VERSION variable');
   is (HTML::FormatExternal->VERSION,  $want_version,
@@ -65,13 +65,14 @@ sub is_undef_or_one_line_string {
   return 1;
 }
 
-foreach my $class (qw(HTML::FormatText::Elinks
-                      HTML::FormatText::Html2text
-                      HTML::FormatText::Links
-                      HTML::FormatText::Lynx
-                      HTML::FormatText::Netrik
-                      HTML::FormatText::W3m
-                      HTML::FormatText::Zen)) {
+foreach my $class ('HTML::FormatText::Elinks',
+                   'HTML::FormatText::Html2text',
+                   'HTML::FormatText::Links',
+                   'HTML::FormatText::Lynx',
+                   'HTML::FormatText::Netrik',
+                   'HTML::FormatText::W3m',
+                   'HTML::FormatText::Zen',
+                  ) {
   diag $class;
   use_ok ($class);
 
@@ -121,7 +122,7 @@ foreach my $class (qw(HTML::FormatText::Elinks
 
  SKIP: {
     if (! defined $class->program_full_version) {
-      skip "$class program not available", 23;
+      skip "$class program not available", 31;
     }
 
     { my $str = $class->format_string ('<html><body>Hello</body><html>');
@@ -256,6 +257,33 @@ foreach my $class (qw(HTML::FormatText::Elinks
           }
         }
       }
+    }
+
+    # exercise some strange filenames which might provoke the formatter
+    # programs
+    #
+    foreach my $filename ('http:', '-', '-###', '%57') {
+      {
+        my $fullname = File::Spec->catfile('t',$filename);
+        my $str = $class->format_file ($fullname);
+        like ($str, qr/body.*text/,
+              "$class format_file() filename \"$fullname\"");
+      }
+
+      require Cwd;
+      require FindBin;
+      my $old_dir = Cwd::getcwd();
+      my $dir = $FindBin::Bin;
+      $dir = $FindBin::Bin;
+      chdir $dir or die "Oops, cannot chdir to $dir";
+
+      {
+        my $str = $class->format_file ($filename);
+        like ($str, qr/body.*text/,
+              "$class format_file() filename \"$filename\"");
+      }
+
+      chdir $old_dir or die "Oops, cannot chdir back to $old_dir";
     }
   }
 }

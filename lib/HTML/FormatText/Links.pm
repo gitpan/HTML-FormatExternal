@@ -1,4 +1,4 @@
-# Copyright 2008, 2009, 2010 Kevin Ryde
+# Copyright 2008, 2009, 2010, 2013 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -17,10 +17,15 @@ package HTML::FormatText::Links;
 use 5.006;
 use strict;
 use warnings;
+use URI::file;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 19;
+# uncomment this to run the ### lines
+# use Smart::Comments;
+
+
+our $VERSION = 20;
 
 use constant DEFAULT_LEFTMARGIN => 3;
 use constant DEFAULT_RIGHTMARGIN => 77;
@@ -37,8 +42,9 @@ use constant _WIDE_CHARSET => 'iso-8859-1';
   sub _have_html_margin {
     $help_done ||= do {
       my ($class) = @_;
-      my $help = $class->_run_version ('links', '-help');
+      my $help = $class->_run_version (['links', '-help']);
       $have_html_margin = (defined $help && $help =~ /-html-margin/);
+      ### $have_html_margin
       1;
     };
     return $have_html_margin;
@@ -47,7 +53,7 @@ use constant _WIDE_CHARSET => 'iso-8859-1';
 
 sub program_full_version {
   my ($self_or_class) = @_;
-  return $self_or_class->_run_version ('links', '-version');
+  return $self_or_class->_run_version (['links', '-version']);
 }
 sub program_version {
   my ($self_or_class) = @_;
@@ -60,8 +66,8 @@ sub program_version {
   return $1;
 }
 
-sub _crunch_command {
-  my ($class, $options) = @_;
+sub _make_run {
+  my ($class, $input_filename, $options) = @_;
   my @command = ('links', '-dump', '-force-html');
 
   if (defined $options->{'_width'}) {
@@ -81,7 +87,14 @@ sub _crunch_command {
   }
 
   # 'links_options' not documented ...
-  return (@command, @{$options->{'links_options'} || []});
+  push @command, @{$options->{'links_options'} || []};
+
+  # links interprets "%" in the input filename as URI style %ff hex
+  # encodings.  Turn unusual filenames like "%" or "-" into full
+  # file:// using URI::file.
+  push @command, URI::file->new_abs($input_filename)->as_string;
+
+  return (\@command);
 }
 
 # links (version 2.2 at least) accepts "latin1" but not "latin-1".  The
@@ -98,7 +111,7 @@ sub _links_mung_charset {
 1;
 __END__
 
-=for stopwords formatters charset UTF unicode latin Ryde FormatExternal
+=for stopwords HTML-FormatExternal formatters charset UTF-8 unicode latin-1 latin1 Ryde
 
 =head1 NAME
 
@@ -154,7 +167,7 @@ ease that by for instance turning "latin-1" (not accepted) into "latin1"
 
 =head1 SEE ALSO
 
-L<HTML::FormatExternal>
+L<HTML::FormatExternal>, L<links(1)>
 
 =head1 HOME PAGE
 
@@ -162,7 +175,7 @@ http://user42.tuxfamily.org/html-formatexternal/index.html
 
 =head1 LICENSE
 
-Copyright 2008, 2009, 2010 Kevin Ryde
+Copyright 2008, 2009, 2010, 2013 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the

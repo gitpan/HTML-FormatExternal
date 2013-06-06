@@ -1,4 +1,4 @@
-# Copyright 2008, 2009, 2010 Kevin Ryde
+# Copyright 2008, 2009, 2010, 2012, 2013 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -13,21 +13,29 @@
 # You should have received a copy of the GNU General Public License along
 # with HTML-FormatExternal.  If not, see <http://www.gnu.org/licenses/>.
 
+
+# Maybe:
+#     --dump-charset UTF-8 ??
+#
+
+
+
 package HTML::FormatText::Elinks;
 use 5.006;
 use strict;
 use warnings;
+use URI::file;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 19;
+our $VERSION = 20;
 
 use constant DEFAULT_LEFTMARGIN => 3;
 use constant DEFAULT_RIGHTMARGIN => 77;
 
 sub program_full_version {
   my ($self_or_class) = @_;
-  return $self_or_class->_run_version ('elinks', '-version');
+  return $self_or_class->_run_version (['elinks', '-version']);
 }
 sub program_version {
   my ($self_or_class) = @_;
@@ -42,8 +50,8 @@ sub program_version {
   return $1;
 }
 
-sub _crunch_command {
-  my ($class, $options) = @_;
+sub _make_run {
+  my ($class, $input_filename, $options) = @_;
   my @command = ('elinks', '-dump', '-force-html');
 
   #   if ($options->{'ansi_colour'}) {
@@ -60,8 +68,8 @@ sub _crunch_command {
     $input_charset = _elinks_mung_charset ($input_charset);
     push @command,
       '-eval', ('set document.codepage.assume='
-                . _quote_config_stringarg ($input_charset)),
-        '-eval', 'set document.codepage.force_assumed=1';
+                . _quote_config_stringarg($input_charset)),
+                  '-eval', 'set document.codepage.force_assumed=1';
 
   }
   if (my $output_charset = $options->{'output_charset'}) {
@@ -69,7 +77,16 @@ sub _crunch_command {
   }
 
   # 'elinks_options' not documented ...
-  return (@command, @{$options->{'elinks_options'} || []});
+  push @command, @{$options->{'elinks_options'} || []};
+
+  # elinks takes any "-foo" to be an option (except a bare "-") and
+  # there's no apparent "--" to end options (in its version 0.12pre5).
+  # Filenames starting "http:" are rejected.
+  # Turn into file:// using URI::file to ensure literal filename.
+  #
+  push @command, URI::file->new_abs($input_filename)->as_string;
+
+  return (\@command);
 }
 
 # elinks (version 0.12pre2 at least) is picky about charset names in a
@@ -82,18 +99,18 @@ sub _elinks_mung_charset {
   return $charset;
 }
 
-# return $str with quotes around it, and backslashed within it, suitable for
-# use in an elinks config file, or -eval of a config file line
+# Return $str with quotes around it, and backslashed within it, suitable for
+# use in an elinks config file or -eval of a config file line.
 sub _quote_config_stringarg {
   my ($str) = @_;
-  $str =~ s/'/\\'/g;
-  return "'$str'";
+  $str =~ s/'/\\'/g;  # ' -> \'
+  return "'$str'";    # '$str' surrounding quotes
 }
 
 1;
 __END__
 
-=for stopwords elinks formatters Elinks pre multibyte charset utf charsets latin Ryde FormatExternal
+=for stopwords HTML-FormatExternal elinks formatters Elinks 0.12pre2 multibyte charset utf-8 charsets latin-1 latin1 Ryde recode
 
 =head1 NAME
 
@@ -145,7 +162,7 @@ to ease that by for instance turning "latin-1" (not accepted) into "latin1"
 
 =head1 SEE ALSO
 
-L<HTML::FormatExternal>
+L<HTML::FormatExternal>, L<elinks(1)>
 
 =head1 HOME PAGE
 
@@ -153,7 +170,7 @@ http://user42.tuxfamily.org/html-formatexternal/index.html
 
 =head1 LICENSE
 
-Copyright 2008, 2009, 2010 Kevin Ryde
+Copyright 2008, 2009, 2010, 2012, 2013 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the

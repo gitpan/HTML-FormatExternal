@@ -1,5 +1,6 @@
-<!--
- Copyright 2008, 2009, 2013 Kevin Ryde
+<!--      mode: html
+
+ Copyright 2013 Kevin Ryde
 
  HTML-FormatExternal is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License as published
@@ -16,12 +17,13 @@
 -->
 
 <html>
-<head><title>This is the title</title></head>
+<head>
+ <title>This is the title text.</title>
+</head>
 
-<body>123 567 9012 abc def ghij
-<br>0 2 4 6 8 A C E
-<br>01 3 5 7 9 B D F
-
-<br> degrees: °
+<body>
+ <p>
+  This is the body text.
+ </p>
 </body>
 </html>

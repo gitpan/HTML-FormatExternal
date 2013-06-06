@@ -1,4 +1,4 @@
-# Copyright 2008, 2009, 2010 Kevin Ryde
+# Copyright 2008, 2009, 2010, 2013 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -17,10 +17,14 @@ package HTML::FormatText::Lynx;
 use 5.006;
 use strict;
 use warnings;
+use URI::file;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 19;
+# uncomment this to run the ### lines
+# use Smart::Comments;
+
+our $VERSION = 20;
 
 use constant DEFAULT_LEFTMARGIN => 2;
 use constant DEFAULT_RIGHTMARGIN => 72;
@@ -34,8 +38,9 @@ use constant DEFAULT_RIGHTMARGIN => 72;
   sub _have_nomargins {
     my ($class) = @_;
     $help_done ||= do {
-      my $help = $class->_run_version ('lynx', '-help');
+      my $help = $class->_run_version (['lynx', '-help']);
       $have_nomargins = (defined $help && $help =~ /-nomargins/);
+      ### $have_nomargins
       1;
     };
     return $have_nomargins;
@@ -44,7 +49,7 @@ use constant DEFAULT_RIGHTMARGIN => 72;
 
 sub program_full_version {
   my ($self_or_class) = @_;
-  return $self_or_class->_run_version ('lynx', '-version');
+  return $self_or_class->_run_version (['lynx', '-version']);
 }
 sub program_version {
   my ($self_or_class) = @_;
@@ -57,8 +62,8 @@ sub program_version {
   return $1;
 }
 
-sub _crunch_command {
-  my ($class, $options) = @_;
+sub _make_run {
+  my ($class, $input_filename, $options) = @_;
   my @command = ('lynx', '-dump', '-force_html');
 
   if (defined $options->{'_width'}) {
@@ -82,13 +87,22 @@ sub _crunch_command {
   # unlike the name would suggest ...
 
   # 'lynx_options' not documented ...
-  return (@command, @{$options->{'lynx_options'} || []});
+  push @command, @{$options->{'lynx_options'} || []};
+
+  # "lynx -" means read standard input.
+  # Any other "-foo" is an option.
+  # Recent lynx has "--" to mean end of options, but not circa 2.8.6.
+  # "lynx dir/http:" attempts to connect to something.
+  # Escape all this by URI::file.
+  push @command, URI::file->new_abs($input_filename)->as_string;
+
+  return (\@command);
 }
 
 1;
 __END__
 
-=for stopwords formatters latin iso boolean Ryde FormatExternal
+=for stopwords HTML-FormatExternal formatters latin-1 iso-8859-1 boolean Ryde eg
 
 =head1 NAME
 
@@ -147,7 +161,7 @@ what will be output, or throw a Perl error when unsupported.
 
 =item C<justify> (boolean)
 
-If true then C<-justify> is passed to lynx to get all lines in the paragraph
+If true then C<-justify> is passed to lynx to have all lines in the paragraph
 padded out with extra spaces to the given C<rightmargin> (or default right
 margin).
 
@@ -155,7 +169,7 @@ margin).
 
 =head1 SEE ALSO
 
-L<HTML::FormatExternal>
+L<HTML::FormatExternal>, L<lynx(1)>
 
 =head1 HOME PAGE
 
@@ -163,7 +177,7 @@ http://user42.tuxfamily.org/html-formatexternal/index.html
 
 =head1 LICENSE
 
-Copyright 2008, 2009, 2010 Kevin Ryde
+Copyright 2008, 2009, 2010, 2013 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the

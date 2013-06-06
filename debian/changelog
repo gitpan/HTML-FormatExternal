@@ -1,5 +1,5 @@
-libhtml-formatexternal-perl (19-1) unstable; urgency=low
+libhtml-formatexternal-perl (20-0.1) unstable; urgency=low
 
   * Packaged version.
 
- -- Kevin Ryde <user42@zip.com.au>  Sun, 06 Feb 2011 16:46:55 +1100
+ -- Kevin Ryde <user42@zip.com.au>  Tue, 04 Jun 2013 09:25:04 +1000

@@ -1,4 +1,4 @@
-# Copyright 2008, 2009, 2010 Kevin Ryde
+# Copyright 2008, 2009, 2010, 2013 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -17,17 +17,18 @@ package HTML::FormatText::W3m;
 use 5.006;
 use strict;
 use warnings;
+use URI::file;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 19;
+our $VERSION = 20;
 
 use constant DEFAULT_LEFTMARGIN => 0;
 use constant DEFAULT_RIGHTMARGIN => 80;
 
 sub program_full_version {
   my ($self_or_class) = @_;
-  return $self_or_class->_run_version ('w3m', '-version');
+  return $self_or_class->_run_version (['w3m', '-version']);
 }
 sub program_version {
   my ($self_or_class) = @_;
@@ -40,8 +41,8 @@ sub program_version {
   return $1;
 }
 
-sub _crunch_command {
-  my ($class, $options) = @_;
+sub _make_run {
+  my ($class, $input_filename, $options) = @_;
   my @command = ('w3m', '-dump', '-T', 'text/html');
 
   # w3m seems to use one less than the given -cols, presumably designed with
@@ -58,7 +59,18 @@ sub _crunch_command {
   }
 
   # 'w3m_options' not documented ...
-  return (@command, @{$options->{'w3m_options'} || []});
+  push @command, @{$options->{'w3m_options'} || []};
+
+  # w3m (circa its version 0.5.3) interprets "%" in the input
+  # filename as URI style %ff hex encodings.  Turn unusual filenames
+  # like "%" into full file:// using URI::file.
+  #
+  # Filenames merely starting "-" can be given as "./-" etc to avoid
+  # them being interpreted as options.  The file:// does this too.
+  #
+  push @command, URI::file->new_abs($input_filename)->as_string;
+
+  return (\@command);
 }
 
 sub new {
@@ -74,7 +86,7 @@ sub format {
 1;
 __END__
 
-=for stopwords formatters Ryde FormatExternal
+=for stopwords HTML-FormatExternal formatters Ryde
 
 =head1 NAME
 
@@ -110,7 +122,7 @@ which are supported by C<HTML::FormatText::W3m>.
 
 =head1 SEE ALSO
 
-L<HTML::FormatExternal>
+L<HTML::FormatExternal>, L<w3m(1)>
 
 =head1 HOME PAGE
 
@@ -118,7 +130,7 @@ http://user42.tuxfamily.org/html-formatexternal/index.html
 
 =head1 LICENSE
 
-Copyright 2008, 2009, 2010 Kevin Ryde
+Copyright 2008, 2009, 2010, 2013 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the

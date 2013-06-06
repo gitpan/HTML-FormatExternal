@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.66.
+signed via the Module::Signature module, version 0.68.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -15,49 +15,64 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA1
 
 SHA1 842745cb706f8f2126506f544492f7a80dbe29b3 COPYING
-SHA1 43b2eb4c475c67b40c23099d10265e17fe95a8c9 Changes
-SHA1 fea4f8a09306f6417a7b276f6d86af40dd3c4afd MANIFEST
-SHA1 6c771cc4b0718f7bc9c9af01889700d7bce0a8e6 MANIFEST.SKIP
-SHA1 1d32e31654cbe1cf67c74bb0437c1322f9d6f48c META.yml
-SHA1 0ac7208ef453407d075429138a71dbdc894dc0fc Makefile.PL
-SHA1 c0132c6a505f5f378bf3bca0606801120c09ba1b README
-SHA1 f5c9b787d8f385ddf79b2d5f75a23defea2aae08 debian/changelog
+SHA1 9e0b61c849646ab012938c716dde466d9feddd30 Changes
+SHA1 5157b068153b34d0dc36d3b7aa9f33348fa6c608 MANIFEST
+SHA1 b758f740af57256154bbf4e1f8a760a1b9f9dfe1 MANIFEST.SKIP
+SHA1 a9080807ebc7f6ce45cf85eb607820b0358a3965 META.yml
+SHA1 005a39856b51b25eab8d40af38309964a064a125 Makefile.PL
+SHA1 5add845396738af399dd7808883a7fda1d4c80e8 README
+SHA1 db4d8d427016434936e12e79d4e9d5264cda8ec9 debian/changelog
 SHA1 ac3478d69a3c81fa62e60f5c3696165a4e5e6ac4 debian/compat
-SHA1 eda77cd0217ccbd279d9011dfb14206e2b402d09 debian/control
-SHA1 62eaa2a14227c31e371cc23a175d696ea0c10c5a debian/copyright
+SHA1 86026bc77f2b538cef756f4b16ce5217b02a78a6 debian/control
+SHA1 8051d3061d05bc848eb94cc93fb70a76735a374a debian/copyright
 SHA1 7b20ede534e907b190590ebefea70040581c820f debian/rules
 SHA1 61652cd1568dcf2614df833eba241755eee34e89 debian/source/format
 SHA1 97b2a7bbf231ad7c6576c2120da6e217be4e98eb debian/watch
 SHA1 40aaa9775e1dc755939e88641412d535ae66c7ac devel/base-utf16.html
 SHA1 c65b23ab6e4fb8a7f3b98f7394cce6d803bc025f devel/base.html
-SHA1 9eefd7e0439fb5187e4e32dae89e33b66ad31df6 devel/margin12.html
-SHA1 98caa6a23ee409b1a6483072500ac3dc75dafed4 devel/run.pl
+SHA1 043f4d3097f8cdcb9e7cc23b720ad6d03211a68e devel/element-format.pl
+SHA1 8abf536e7140fa7b5494c28c16e15465a6cf8ff9 devel/margin12.html
+SHA1 837edccee89d1aac172c29c89d54c7df2ca57f49 devel/run.pl
+SHA1 48e454ace186317f76e0f466c2c54baa362db46a devel/slurp.pl
 SHA1 2af40e15b8891946e9a23d762137c0d0e6e19b04 devel/utf.pl
-SHA1 6762a9ff28fa538539cfbfb67eb3092109bac134 examples/demo.pl
-SHA1 cf647ee28a7aaad9896d0063f8a2529919ccfcd3 inc/MyMakeMakerExtras.pm
+SHA1 5a4e96028a3ba555b32972a14d16c084e140c688 examples/demo.pl
 SHA1 7a988b2aa7ed09f1cb9029a1ef3f0e2139dca0cf inc/my_pod2html
-SHA1 3d2c61eb0fa4cae66d593159e08f57dd4c0268b7 lib/HTML/FormatExternal.pm
-SHA1 5e016e8014c2990fee4fc682a120e74767881853 lib/HTML/FormatText/Elinks.pm
-SHA1 b60ed21ab734aede5b7fd646975c360bca5f1002 lib/HTML/FormatText/Html2text.pm
-SHA1 ae9b9335c7b19ba96e949ee117e30277c133efcf lib/HTML/FormatText/Links.pm
-SHA1 4002ada20a5ab211babc9f6334f1b15b583f8291 lib/HTML/FormatText/Lynx.pm
-SHA1 b140a22d65930dc18a4d0f0a04cb4dba486fd4bf lib/HTML/FormatText/Netrik.pm
-SHA1 0bf1b232226496a2a4ae3c64e228a27c952f404d lib/HTML/FormatText/W3m.pm
-SHA1 0a265ea4bece01721bec2043b767282081fb07e7 lib/HTML/FormatText/Zen.pm
-SHA1 2a292ab9586616c823bfe61397c31ec87f10feea t/Elinks.t
-SHA1 7c93c80ec73a301d89741778c612156f300a7dbe t/FormatExternal.t
-SHA1 1d14fee88cba644486cf3171e0350db0cee05342 t/Links.t
-SHA1 36b8eba56c87d62b1b41959187c717577dc16fa5 t/MyTestHelpers.pm
-SHA1 def7b7c549833d02bdd2921e69c2f2523a654241 t/devel/More.t
-SHA1 0279c9310ec528d10a2a14e602bf98f1c776cce1 xt/0-META-read.t
-SHA1 8a5e0f34131de34e584fbb1939c191a152566155 xt/0-Test-DistManifest.t
-SHA1 cc04a5fe5d8b8b38bfd56453d5d2686c8ea58783 xt/0-Test-Pod.t
-SHA1 8cc52e23427a82cfef5802bf512b13c65de2687a xt/0-Test-Synopsis.t
-SHA1 4c14845872d6eb4280e12f862d6ba2c343358c60 xt/0-Test-YAML-Meta.t
+SHA1 4ce79af748f10c3764e830b1417dadc9c33c86f7 lib/HTML/FormatExternal.pm
+SHA1 3470d7b95d6c77b548340c137c55e8a9fbd0b49e lib/HTML/FormatText/Elinks.pm
+SHA1 869e0fe7e17dc389b0affe35790b994b6a80ec28 lib/HTML/FormatText/Html2text.pm
+SHA1 a2c64683728d4d03f0d4dff25892bb216062facc lib/HTML/FormatText/Links.pm
+SHA1 ca0ebcc86f959c574895c7ff28e9e7a3a3b2a70b lib/HTML/FormatText/Lynx.pm
+SHA1 9882eca270c756b70f938eb8daefe47bffe1a58f lib/HTML/FormatText/Netrik.pm
+SHA1 4ddab3d1b3f1edb6aa81e71e097e9adc015ee673 lib/HTML/FormatText/Vilistextum.pm
+SHA1 b1672121f76c44f89151babb9f11b4991dfa5848 lib/HTML/FormatText/W3m.pm
+SHA1 119fff54d30b5d820b699c271b269282ba84956f lib/HTML/FormatText/Zen.pm
+SHA1 0fb013243968897bbd52d598c020d1c6d580c01d t/%57
+SHA1 0fb013243968897bbd52d598c020d1c6d580c01d t/-
+SHA1 0fb013243968897bbd52d598c020d1c6d580c01d t/-###
+SHA1 3b82d48bc06521cc6f37e2f0d8153428260a3e3f t/Elinks.t
+SHA1 39ca05ad37623a096b834765d84e060c0a48c347 t/FormatExternal.t
+SHA1 ac7883bd15e0f79540d3a6cd881686c75a757df9 t/Links.t
+SHA1 3855de075da37f5bc4e6a5534b2f00cc14872a98 t/MyTestHelpers.pm
+SHA1 0fb013243968897bbd52d598c020d1c6d580c01d t/http:
+SHA1 f2ceb7bb4bf68bd24728b90918e63d251fd06183 xt/0-META-read.t
+SHA1 c9e7a47e1f397eb5f46d7e4ef21754d9df76e36e xt/0-Test-ConsistentVersion.t
+SHA1 d9e7f38a8dcfdb76c56951e4214be8eeda2e2289 xt/0-Test-DistManifest.t
+SHA1 9496e4a2a2734c7093ab6961900dd7a55800976e xt/0-Test-Pod.t
+SHA1 083242d959c1a9242c874982e4585872a95bec93 xt/0-Test-Synopsis.t
+SHA1 ec454b1b524d2d0b35e5a7d8292ad13d82becab5 xt/0-Test-YAML-Meta.t
+SHA1 3c929b147a70e1d0cfe63d69223a5ed407a295b2 xt/0-examples-xrefs.t
+SHA1 7bc810750906ae91a13b16c7bd833dd6e1c9741b xt/0-file-is-part-of.t
+SHA1 aeb6f41dfae96d04459448f6c3e3dee44691e722 xt/0-no-debug-left-on.t
+SHA1 4a96ea4a349a7b8364308e377f53d32092087f7b xt/More.t
+SHA1 e4a15f9b4bcf1d087de2d9ed8e87bf92b0469a6c xt/my-manifest.sh
+SHA1 84a47c1d71fd58797a2754030998dfb673b62811 xtools/my-check-copyright-years.sh
+SHA1 1f28ea8151b0f8554e5ab4e5bbcf1c5371f788eb xtools/my-check-spelling.sh
+SHA1 f3e50b961e575e060e35ddc4d94c7b3e6101d660 xtools/my-deb.sh
+SHA1 4db9c30b1fc96b04a794218ca19561b368f59679 xtools/my-pc.sh
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
+Version: GnuPG v1.4.12 (GNU/Linux)
 
-iD8DBQFNUJEmLFMCIV9q3ToRAqBAAJ4hj/2CGVIu0Y7UCNGweEJ9M+7x4gCfWuxi
-7adw16HwxembB90WFWq/KM4=
-=Ho1Y
+iD8DBQFRr+IILFMCIV9q3ToRAtsoAKCZkZwgpCmCZR+AqkXMEwcCtRh/CACeI6Wp
+PLKoei16nul8h3AIzWMLGHI=
+=8Wjj
 -----END PGP SIGNATURE-----

@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Copyright 2008, 2009, 2010 Kevin Ryde
+# Copyright 2008, 2009, 2010, 2013 Kevin Ryde
 
 # This file is part of HTML-FormatExternal.
 #
@@ -27,7 +27,7 @@ BEGIN { MyTestHelpers::nowarnings() }
 
 require HTML::FormatText::Links;
 {
-  my $want_version = 19;
+  my $want_version = 20;
   is ($HTML::FormatText::Links::VERSION, $want_version,
       'VERSION variable');
   is (HTML::FormatText::Links->VERSION,  $want_version,

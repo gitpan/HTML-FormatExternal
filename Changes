@@ -1,4 +1,4 @@
-Copyright 2008, 2009, 2010, 2011 Kevin Ryde
+Copyright 2008, 2009, 2010, 2011, 2013 Kevin Ryde
 
 This file is part of HTML-FormatExternal.
 
@@ -16,6 +16,11 @@ You should have received a copy of the GNU General Public License
 along with HTML-FormatExternal.  If not, see http://www.gnu.org/licenses/
 
 
+
+Version 20, June 2013
+    - escape strange filenames like "-" or "%"
+    - new HTML::FormatText::Vilistextum
+    - use IPC::Run
 
 Version 19, February 2011
     - fix Makefile.PL for perl 5.6 and earlier

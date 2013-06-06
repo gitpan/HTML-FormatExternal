@@ -1,4 +1,4 @@
-# Copyright 2008, 2009, 2010 Kevin Ryde
+# Copyright 2008, 2009, 2010, 2013 Kevin Ryde
 
 # HTML-FormatExternal is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as published
@@ -20,7 +20,10 @@ use warnings;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 19;
+# uncomment this to run the ### lines
+# use Smart::Comments;
+
+our $VERSION = 20;
 
 use constant DEFAULT_LEFTMARGIN => 0;
 use constant DEFAULT_RIGHTMARGIN => 79;
@@ -35,8 +38,9 @@ use constant _WIDE_CHARSET => 'iso-8859-1';
   sub _have_ascii {
     my ($class) = @_;
     $help_done ||= do {
-      my $help = $class->_run_version ('html2text', '-help');
+      my $help = $class->_run_version (['html2text', '-help']);
       $have_ascii = (defined $help && $help =~ /-ascii/);
+      ### $have_ascii
       1;
     };
     return $have_ascii;
@@ -45,7 +49,7 @@ use constant _WIDE_CHARSET => 'iso-8859-1';
 
 sub program_full_version {
   my ($self_or_class) = @_;
-  return $self_or_class->_run_version ('html2text -version 2>&1');
+  return $self_or_class->_run_version (['html2text','-version'], '2>&1');
 }
 sub program_version {
   my ($self_or_class) = @_;
@@ -58,8 +62,8 @@ sub program_version {
   return $1;
 }
 
-sub _crunch_command {
-  my ($class, $options) = @_;
+sub _make_run {
+  my ($class, $input_filename, $options) = @_;
   my @command = ('html2text', '-nobs');
 
   if (defined $options->{'_width'}) {
@@ -76,13 +80,25 @@ sub _crunch_command {
   }
 
   # 'html2text_options' not documented ...
-  return (@command, @{$options->{'html2text_options'} || []});
+  push @command, @{$options->{'html2text_options'} || []};
+
+  # "html2text -" input filename "-" means read standard input.
+  # Any other "-foo" starting with "-" is an option and there's no apparent
+  # "--" to mark the end of options (as of its version 1.3.2a).
+  #
+  # Normally html2text takes file: or http:, but the debian version mangles
+  # it to a bare filename only.  This makes it hard to escape a name
+  # suitably to get through both.  Instead use standard input which both
+  # versions read by default.
+
+  return (\@command,
+          '<', $input_filename);
 }
 
 1;
 __END__
 
-=for stopwords html formatters ascii charset latin Ryde FormatExternal
+=for stopwords HTML-FormatExternal html2text formatters ascii charset latin-1 Ryde
 
 =head1 NAME
 
@@ -121,9 +137,9 @@ the following caveats,
 
 =item C<output_charset>
 
-If set to "ascii" or "ANSI_X3.4-1968" (both case-insensitive) the C<-ascii>
-option is used, when available (C<html2text> 1.3.2 from Jan 2004).  Apart
-from that there's no control over the output charset.
+If set to "ascii" or "ANSI_X3.4-1968" (both case-insensitive) the
+C<html2text -ascii> option is used, when available (C<html2text> 1.3.2 from
+Jan 2004).  Apart from that there's no control over the output charset.
 
 =item C<input_charset>
 
@@ -134,7 +150,7 @@ Currently this option has no effect, input generally has to be latin-1 only
 
 =head1 SEE ALSO
 
-L<HTML::FormatExternal>
+L<HTML::FormatExternal>, L<html2text(1)>
 
 =head1 HOME PAGE
 
@@ -142,7 +158,7 @@ http://user42.tuxfamily.org/html-formatexternal/index.html
 
 =head1 LICENSE
 
-Copyright 2008, 2009, 2010 Kevin Ryde
+Copyright 2008, 2009, 2010, 2013 Kevin Ryde
 
 HTML-FormatExternal is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by the
