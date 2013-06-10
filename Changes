@@ -17,6 +17,10 @@ along with HTML-FormatExternal.  If not, see http://www.gnu.org/licenses/
 
 
 
+Version 21, June 2013
+    - don't distribute file "http:" as it won't unpack on CP/M and similar,
+      per report by Alexandr Ciornii RT#86008
+
 Version 20, June 2013
     - escape strange filenames like "-" or "%"
     - new HTML::FormatText::Vilistextum

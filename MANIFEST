@@ -30,14 +30,12 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 README
 SIGNATURE
-t/%57
-t/-
-t/-###
 t/Elinks.t
 t/FormatExternal.t
 t/http:
 t/Links.t
 t/MyTestHelpers.pm
+t/test.html
 xt/0-examples-xrefs.t
 xt/0-file-is-part-of.t
 xt/0-META-read.t

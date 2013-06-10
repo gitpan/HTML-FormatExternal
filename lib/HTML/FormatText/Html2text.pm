@@ -23,7 +23,7 @@ our @ISA = ('HTML::FormatExternal');
 # uncomment this to run the ### lines
 # use Smart::Comments;
 
-our $VERSION = 20;
+our $VERSION = 21;
 
 use constant DEFAULT_LEFTMARGIN => 0;
 use constant DEFAULT_RIGHTMARGIN => 79;

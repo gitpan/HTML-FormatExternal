@@ -20,15 +20,16 @@
 use 5.006;
 use strict;
 use warnings;
+use FindBin;
 use HTML::FormatExternal;
-use Test::More tests => 270;
+use Test::More tests => 284;
 
 use lib 't';
 use MyTestHelpers;
 BEGIN { MyTestHelpers::nowarnings() }
 
 {
-  my $want_version = 20;
+  my $want_version = 21;
   is ($HTML::FormatExternal::VERSION, $want_version,
       'VERSION variable');
   is (HTML::FormatExternal->VERSION,  $want_version,
@@ -122,7 +123,7 @@ foreach my $class ('HTML::FormatText::Elinks',
 
  SKIP: {
     if (! defined $class->program_full_version) {
-      skip "$class program not available", 31;
+      skip "$class program not available", 33;
     }
 
     { my $str = $class->format_string ('<html><body>Hello</body><html>');
@@ -259,31 +260,53 @@ foreach my $class ('HTML::FormatText::Elinks',
       }
     }
 
-    # exercise some strange filenames which might provoke the formatter
-    # programs
+    # Exercise some strange filenames which might provoke the formatter
+    # programs.
     #
-    foreach my $filename ('http:', '-', '-###', '%57') {
-      {
-        my $fullname = File::Spec->catfile('t',$filename);
-        my $str = $class->format_file ($fullname);
-        like ($str, qr/body.*text/,
-              "$class format_file() filename \"$fullname\"");
+    {
+      my $testfilename = File::Spec->catfile($FindBin::Bin,'test.html');
+
+      require File::Temp;
+      require File::Copy;
+      my $tempdir_object = File::Temp->newdir;
+      my $tempdir_name = $tempdir_object->dirname;
+      diag "Temporary directory ",$tempdir_name;
+
+      foreach my $filename ('http:',
+                            '-',
+                            '-###',
+                            '%57',
+                            'a/b',    # probably uncreatable
+                           ) {
+        my $fullname = File::Spec->catfile($tempdir_name,$filename);
+
+      SKIP: {
+          # might be impossible to create a file like "http:" on CP/M or MS-DOS
+          File::Copy::copy($testfilename, $fullname)
+              or skip "Cannot copy test file to $fullname: $!", 2;
+
+          {
+            my $str = $class->format_file ($fullname);
+            like ($str, qr/body.*text/,
+                  "$class format_file() filename \"$fullname\"");
+          }
+
+          require Cwd;
+          my $old_dir = Cwd::getcwd();
+          chdir $tempdir_name or die "Oops, cannot chdir to $tempdir_name";
+
+          {
+            my $str = $class->format_file ($filename);
+            like ($str, qr/body.*text/,
+                  "$class format_file() filename \"$filename\"");
+          }
+
+          chdir $old_dir or die "Oops, cannot chdir back to $old_dir";
+        }
+
+        # actually File::Temp removes files in its temporary directory anyway
+        unlink $fullname;
       }
-
-      require Cwd;
-      require FindBin;
-      my $old_dir = Cwd::getcwd();
-      my $dir = $FindBin::Bin;
-      $dir = $FindBin::Bin;
-      chdir $dir or die "Oops, cannot chdir to $dir";
-
-      {
-        my $str = $class->format_file ($filename);
-        like ($str, qr/body.*text/,
-              "$class format_file() filename \"$filename\"");
-      }
-
-      chdir $old_dir or die "Oops, cannot chdir back to $old_dir";
     }
   }
 }

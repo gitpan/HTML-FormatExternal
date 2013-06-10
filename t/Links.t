@@ -27,7 +27,7 @@ BEGIN { MyTestHelpers::nowarnings() }
 
 require HTML::FormatText::Links;
 {
-  my $want_version = 20;
+  my $want_version = 21;
   is ($HTML::FormatText::Links::VERSION, $want_version,
       'VERSION variable');
   is (HTML::FormatText::Links->VERSION,  $want_version,

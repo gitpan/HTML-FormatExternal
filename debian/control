@@ -38,7 +38,7 @@ Bugs: mailto:user42@zip.com.au
 
 Package: libhtml-formatexternal-perl
 Architecture: all
-Depends: perl (>= 5.6), libfile-spec-perl (>= 0.8) | perl (>= 5.6.0), libfile-temp-perl (>= 0.18) | perl (>= 5.8.9), libipc-run-perl, liburi-perl (>= 0.08), ${perl:Depends}, ${misc:Depends}
+Depends: perl (>= 5.6), libfile-temp-perl (>= 0.18) | perl (>= 5.8.9), libipc-run-perl, liburi-perl (>= 0.08), ${perl:Depends}, ${misc:Depends}
 Recommends: lynx | elinks | links | netrik | vilistextum | w3m | zen
 Suggests: elinks, links, lynx, netrik, vilistextum, w3m, zen
 Description: Format HTML to text in perl using external programs

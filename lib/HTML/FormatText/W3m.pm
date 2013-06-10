@@ -21,7 +21,7 @@ use URI::file;
 use HTML::FormatExternal;
 our @ISA = ('HTML::FormatExternal');
 
-our $VERSION = 20;
+our $VERSION = 21;
 
 use constant DEFAULT_LEFTMARGIN => 0;
 use constant DEFAULT_RIGHTMARGIN => 80;

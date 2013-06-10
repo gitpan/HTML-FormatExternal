@@ -38,7 +38,7 @@ WriteMakefile
                     'File::Temp' => 0.18,
 
                     # Version 0.80 for File::Spec->devnull(), which came
-                    # with Perl 5.6.0.
+                    # with Perl 5.6.0 already in fact.
                     'File::Spec' => 0.80,
 
                     # only for the t/*.t tests
