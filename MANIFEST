@@ -32,7 +32,6 @@ README
 SIGNATURE
 t/Elinks.t
 t/FormatExternal.t
-t/http:
 t/Links.t
 t/MyTestHelpers.pm
 t/test.html

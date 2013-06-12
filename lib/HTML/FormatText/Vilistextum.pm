@@ -31,7 +31,7 @@ our @ISA = ('HTML::FormatExternal');
 # use Smart::Comments;
 
 
-our $VERSION = 21;
+our $VERSION = 22;
 
 # no left margin by default, no option to add it
 use constant DEFAULT_LEFTMARGIN => 0;

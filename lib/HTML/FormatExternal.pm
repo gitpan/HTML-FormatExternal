@@ -35,7 +35,7 @@ use IPC::Run;
 # uncomment this to run the ### lines
 # use Smart::Comments;
 
-our $VERSION = 21;
+our $VERSION = 22;
 
 sub new {
   my ($class, %self) = @_;
